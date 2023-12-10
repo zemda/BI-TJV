@@ -82,7 +82,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase test for remove skin`() {
+    fun `updateCsgoCase remove skin test`() {
         val existingCase = CsgoCase().apply { id = 1L; }
         val skin = Skin().apply { id = 100L; }
         existingCase.contains.add(skin)
@@ -101,7 +101,55 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase test for update case price`() {
+    fun `updateCsgoCase add multiple skins test`() {
+        val existingCase = CsgoCase().apply { id = 1L; }
+        val skin1 = Skin().apply { id = 100L; }
+        val skin2 = Skin().apply { id = 110L; }
+        val skin3 = Skin().apply { id = 101L; }
+
+        `when`(caseRepo.findById(1L)).thenReturn(Optional.of(existingCase))
+        `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin1))
+        `when`(skinRepo.findById(110L)).thenReturn(Optional.of(skin2))
+        `when`(skinRepo.findById(101L)).thenReturn(Optional.of(skin3))
+        `when`(caseRepo.save(any(CsgoCase::class.java))).thenReturn(existingCase)
+
+        val updatedCase = csgoCaseService.updateCsgoCase(existingCase.id, listOf(skin1.id, skin2.id, skin3.id), true)
+
+        verify(caseRepo, times(1)).findById(1L)
+        verify(caseRepo, times(1)).save(any(CsgoCase::class.java))
+        assert(updatedCase.contains.containsAll(listOf(skin1, skin2, skin3)))
+
+        reset(caseRepo)
+    }
+
+    @Test
+    fun `updateCsgoCase remove multiple skins test`() {
+        val skin1 = Skin().apply { id = 100L; }
+        val skin2 = Skin().apply { id = 110L; }
+        val skin3 = Skin().apply { id = 101L; }
+
+        val existingCase = CsgoCase().apply {
+            id = 1L
+            contains.addAll(listOf(skin1, skin2, skin3))
+        }
+
+        `when`(caseRepo.findById(1L)).thenReturn(Optional.of(existingCase))
+        `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin1))
+        `when`(skinRepo.findById(110L)).thenReturn(Optional.of(skin2))
+        `when`(skinRepo.findById(101L)).thenReturn(Optional.of(skin3))
+        `when`(caseRepo.save(any(CsgoCase::class.java))).thenReturn(existingCase)
+
+        val updatedCase = csgoCaseService.updateCsgoCase(existingCase.id, listOf(skin1.id, skin2.id, skin3.id), false)
+
+        verify(caseRepo, times(1)).findById(1L)
+        verify(caseRepo, times(1)).save(any(CsgoCase::class.java))
+        assert(updatedCase.contains.isEmpty())
+
+        reset(caseRepo)
+    }
+
+    @Test
+    fun `updateCsgoCase update case price test`() {
         val existingCase = CsgoCase().apply { id = 1L; price = 100.0 }
         val newPrice = 200.0
 
@@ -118,7 +166,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase test for invalid new price`() {
+    fun `updateCsgoCase update with invalid new price test`() {
         val existingCase = CsgoCase().apply { id = 1L; price = 100.0 }
         val newPrice = -200.0  // Invalid cuz < 0
 

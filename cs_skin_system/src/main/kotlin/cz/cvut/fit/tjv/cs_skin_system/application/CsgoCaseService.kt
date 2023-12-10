@@ -67,6 +67,28 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
         return caseRepo.save(case)
     }
 
+    override fun updateCsgoCase(caseId: Long, skinIds: List<Long>, addSkins: Boolean): CsgoCase {
+        val csgoCase = caseRepo.findById(caseId)
+            .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
+
+        skinIds.forEach { skinId ->
+            val skin = skinRepo.findById(skinId)
+                .orElseThrow { NoSuchElementException("No skin with id $skinId") }
+
+            if (addSkins) {
+                if (!csgoCase.contains.add(skin)) {
+                    throw IllegalStateException("Skin with id $skinId is already in the case with id $caseId")
+                }
+            } else {
+                if (!csgoCase.contains.remove(skin)) {
+                    throw IllegalStateException("No skin with id $skinId found in the case with id $caseId")
+                }
+            }
+        }
+
+        return caseRepo.save(csgoCase)
+    }
+
     override fun deleteCsgoCase(csgoCase: CsgoCase) {
         if (caseRepo.existsById(csgoCase.id)) {
             caseRepo.delete(csgoCase)

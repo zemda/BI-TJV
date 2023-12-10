@@ -15,5 +15,7 @@ interface CsgoCaseServiceInterface {
 
     fun updateCsgoCase(caseId: Long, newPrice: Double): CsgoCase
 
+    fun updateCsgoCase(caseId: Long, skinIds: List<Long>, addSkins: Boolean) : CsgoCase
+
     fun deleteCsgoCase(csgoCase: CsgoCase)
 }
