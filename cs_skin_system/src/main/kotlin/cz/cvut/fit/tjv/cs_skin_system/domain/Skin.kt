@@ -1,6 +1,10 @@
 package cz.cvut.fit.tjv.cs_skin_system.domain
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.DecimalMin
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 
 @Entity
@@ -12,13 +16,30 @@ class Skin {
     var id: Long = 0
 
     @Column(name = "name_skin")
+    @NotBlank
     var name: String = ""
+
+    @Column(name = "rarity")
+    @NotBlank
     var rarity: String = ""
+
+    @Column(name = "quality")
+    @NotBlank
     var quality: String = ""
+
+    @Column(name = "price")
+    @NotNull
+    @DecimalMin("0.0")
     var price: Double = 0.0
 
     @Column(name = "paint_seed")
+    @NotNull
+    @Min(0)
     var paintSeed: Int = 0
+
+    @Column(name = "float")
+    @NotNull
+    @DecimalMin("0.0")
     var float: Double = 0.0
 
     @OneToOne(targetEntity = Weapon::class, mappedBy = "skin")
@@ -30,6 +51,16 @@ class Skin {
         joinColumns = [JoinColumn(name = "id_skin")],
         inverseJoinColumns = [JoinColumn(name = "id_case")]
     )
-    var dropsFrom: List<CsgoCase> = listOf()
+    var dropsFrom: MutableSet<CsgoCase> = mutableSetOf()
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Skin
+        return id == other.id
+    }
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 }
