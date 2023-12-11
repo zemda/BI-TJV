@@ -15,6 +15,10 @@ interface SkinServiceInterface {
     fun deleteSkin(skinId: Long)
 
     fun getValuableSkins(rarity: String, price: Double, caseName: String, weapon: String): List<Skin>
+    fun filterSkins(skinId: Long?, name: String?, rarity: String?, exterior: String?,
+                    price: Double?, paintSeed: Int?, float: Double?,
+                    weaponId: Long?, weaponName: String?, csgoCaseId: Long?, csgoCaseName: String?):
+            List<Skin>
 
     fun getSkinsWithNoWeapon(): List<Skin>
 }
