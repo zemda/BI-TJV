@@ -1,5 +1,7 @@
 package cz.cvut.fit.tjv.cs_skin_system.domain
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
@@ -42,7 +44,8 @@ class Skin {
     @DecimalMin("0.0")
     var float: Double = 0.0
 
-    @OneToOne(targetEntity = Weapon::class, mappedBy = "skin")
+    @OneToOne(mappedBy = "skin", cascade = [CascadeType.PERSIST])
+    @JsonBackReference
     var weapon: Weapon? = null
 
     @ManyToMany(targetEntity = CsgoCase::class)

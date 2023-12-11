@@ -1,5 +1,6 @@
 package cz.cvut.fit.tjv.cs_skin_system.domain
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 
 
@@ -18,7 +19,8 @@ class Weapon {
     var type: String = ""
     var tag: String = ""
 
-    @OneToOne(targetEntity = Skin::class, orphanRemoval = true)
+    @OneToOne(optional = false, cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "id_skin")
+    @JsonManagedReference
     var skin: Skin? = null
 }
