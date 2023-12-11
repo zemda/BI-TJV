@@ -27,7 +27,7 @@ class JPASkinRepositoryTest @Autowired constructor(
         val mySkin = Skin().apply {
             name = "Fire Beast"
             rarity = "covert"
-            quality = "Extraordinary"
+            exterior = "Field-Tested"
             price = 250.0
             paintSeed = 123
             float = .255
@@ -54,7 +54,7 @@ class JPASkinRepositoryTest @Autowired constructor(
 
         assertThat(skinFromRepo.name).isEqualTo(mySkin.name)
         assertThat(skinFromRepo.rarity).isEqualTo(mySkin.rarity)
-        assertThat(skinFromRepo.quality).isEqualTo(mySkin.quality)
+        assertThat(skinFromRepo.exterior).isEqualTo(mySkin.exterior)
         assertThat(skinFromRepo.price).isEqualTo(mySkin.price)
         assertThat(skinFromRepo.paintSeed).isEqualTo(mySkin.paintSeed)
         assertThat(skinFromRepo.float).isEqualTo(mySkin.float)

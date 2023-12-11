@@ -23,9 +23,9 @@ class Skin {
     @NotBlank
     var rarity: String = ""
 
-    @Column(name = "quality")
+    @Column(name = "exterior")
     @NotBlank
-    var quality: String = ""
+    var exterior: String = ""
 
     @Column(name = "price")
     @NotNull

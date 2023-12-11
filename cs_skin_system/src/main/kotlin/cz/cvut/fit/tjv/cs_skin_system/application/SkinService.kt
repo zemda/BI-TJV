@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.NoSuchElementException
+import kotlin.math.min
 
 @Service
 @Transactional
@@ -36,9 +37,29 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
     }
 
     override fun createSkin(skin: Skin, caseId: Long?): Skin {
-        if (skinRepository.existsByNameAndPaintSeedAndFloatAndWeaponId(skin.name, skin.paintSeed, skin.float, skin.weapon?.id!!)) {
+        val weaponId = skin.weapon?.id
+        if (weaponId != null && skinRepository
+            .existsByNameAndPaintSeedAndFloatAndWeaponId(
+                skin.name,
+                skin.paintSeed,
+                skin.float,
+                weaponId)
+            ) {
             throw IllegalArgumentException("Skin already exists.")
         }
+
+        skin.exterior = when {
+            skin.float <= 0.07 -> "Factory New"
+            skin.float <= 0.15 -> "Minimal Wear"
+            skin.float <= 0.37 -> "Field-Tested"
+            skin.float <= 0.44 -> "Well-Worn"
+            else -> {
+                skin.float = min(skin.float, 1.0)
+                "Battle-Scarred"
+            }
+        }
+        skin.paintSeed = min(skin.paintSeed, 1000)
+
         val createdSkin = skinRepository.save(skin)
         if (caseId != null) {
             csgoCaseService.updateCsgoCase(caseId, skin.id, true)
