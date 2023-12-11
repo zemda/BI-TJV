@@ -11,4 +11,7 @@ interface JPASkinRepository : JpaRepository<Skin, Long> {
     fun existsByNameAndPaintSeedAndFloatAndWeaponId(name: String, paintSeed: Int, float: Double, weaponId: Long): Boolean
 
     @Query("SELECT s FROM Skin s JOIN s.dropsFrom c WHERE s.rarity = :rarity AND s.price > :price AND c.name = :caseName")
-    fun findByRarityAndPriceAndCsgoCase(@Param("rarity") rarity: String, @Param("price") price: Double, @Param("caseName") caseName: String): List<Skin>}
+    fun findByRarityAndPriceAndCsgoCase(@Param("rarity") rarity: String, @Param("price") price: Double, @Param("caseName") caseName: String): List<Skin>
+
+    fun findByWeaponIsNull(): List<Skin>
+}
