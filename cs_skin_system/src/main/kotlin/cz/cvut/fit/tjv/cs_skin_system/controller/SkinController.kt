@@ -57,4 +57,21 @@ class SkinController (val skinService: SkinService){
         return ResponseEntity.ok(skins)
     }
 
+    @GetMapping("/filter")
+    fun filterSkins(@RequestParam(required = false) skinId: Long?,
+                    @RequestParam(required = false) name: String?,
+                    @RequestParam(required = false) rarity: String?,
+                    @RequestParam(required = false) exterior: String?,
+                    @RequestParam(required = false) price: Double?,
+                    @RequestParam(required = false) paintSeed: Int?,
+                    @RequestParam(required = false) float: Double?,
+                    @RequestParam(required = false) weaponId: Long?,
+                    @RequestParam(required = false) weaponName: String?,
+                    @RequestParam(required = false) csgoCaseId: Long?,
+                    @RequestParam(required = false) csgoCaseName: String?):  ResponseEntity<List<Skin>> {
+
+        val result = skinService.filterSkins(skinId, name, rarity, exterior, price, paintSeed, float, weaponId, weaponName, csgoCaseId, csgoCaseName)
+        return ResponseEntity.ok(result)
+    }
+
 }
