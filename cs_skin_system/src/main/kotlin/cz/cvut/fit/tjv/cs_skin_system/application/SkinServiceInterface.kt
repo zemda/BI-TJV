@@ -12,7 +12,7 @@ interface SkinServiceInterface {
 
     fun updateSkinPrice(skinId: Long, newPrice: Double) : Skin
 
-    fun deleteSkin(skin: Skin)
+    fun deleteSkin(skinId: Long)
 
     fun getValuableSkins(rarity: String, price: Double, caseName: String, weapon: String): List<Skin>
 

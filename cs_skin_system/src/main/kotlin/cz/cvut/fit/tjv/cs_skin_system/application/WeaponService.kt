@@ -54,6 +54,7 @@ class WeaponService (var weaponRepo : JPAWeaponRepository,
     override fun deleteWeapon(weaponId: Long) {
         if (weaponRepo.existsById(weaponId)) {
             val weapon = getWeaponById(weaponId)
+            weapon.skin?.weapon = null
             weaponRepo.delete(weapon)
         }else{
             throw NoSuchElementException("No weapon with id $weaponId.")

@@ -36,7 +36,7 @@ class SkinController (val skinService: SkinService){
 
     @DeleteMapping
     fun deleteSkin(@RequestBody skin: Skin): ResponseEntity<Void> {
-        skinService.deleteSkin(skin)
+        skinService.deleteSkin(skin.id)
         return ResponseEntity.ok().build()
     }
 

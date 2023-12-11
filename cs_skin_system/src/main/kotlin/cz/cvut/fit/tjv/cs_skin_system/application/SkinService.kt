@@ -68,12 +68,14 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
         return createdSkin
     }
 
-    override fun deleteSkin(skin: Skin){
-        if (skinRepository.existsById(skin.id)) {
-            skinRepository.delete(skin)
-        } else {
-            throw NoSuchElementException("No skin with id ${skin.id}")
+    override fun deleteSkin(skinId: Long){
+        val skin = skinRepository.findById(skinId).
+            orElseThrow { NoSuchElementException("No skin with id $skinId") }
+
+        if (skin.weapon != null) {
+            throw IllegalStateException("Skin id $skinId is associated with weapon, Remove the weapon first")
         }
+        skinRepository.delete(skin)
     }
 
     override fun getValuableSkins(rarity: String, price: Double, caseName: String, weapon: String): List<Skin> {
