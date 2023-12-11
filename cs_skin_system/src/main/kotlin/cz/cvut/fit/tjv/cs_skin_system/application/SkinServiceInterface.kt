@@ -15,4 +15,6 @@ interface SkinServiceInterface {
     fun deleteSkin(skin: Skin)
 
     fun getValuableSkins(rarity: String, price: Double, caseName: String, weapon: String): List<Skin>
+
+    fun getSkinsWithNoWeapon(): List<Skin>
 }

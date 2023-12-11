@@ -83,4 +83,7 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
         return valuableSkins
     }
 
+    override fun getSkinsWithNoWeapon(): List<Skin> {
+        return skinRepository.findByWeaponIsNull()
+    }
 }
