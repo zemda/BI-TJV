@@ -32,12 +32,12 @@ class SkinController (val skinService: SkinService){
 
     @PostMapping
     @Operation(summary = "Create and optionally assign it a case")
-    fun createSkin(@RequestBody skin: Skin, @RequestParam(required = false) caseId: Long?): ResponseEntity<Skin> {
+    fun createSkin(@RequestBody skin: Skin, @RequestParam(required = false) caseId: Long?): ResponseEntity<Any> {
         return try {
             val createdSkin = skinService.createSkin(skin, caseId)
             ResponseEntity(createdSkin, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
-            ResponseEntity(HttpStatus.BAD_REQUEST)
+            ResponseEntity(e.message ?: "Skin already exists.", HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -56,14 +56,14 @@ class SkinController (val skinService: SkinService){
 
     @DeleteMapping
     @Operation(summary = "Delete given skin")
-    fun deleteSkin(@RequestBody skin: Skin): ResponseEntity<Void> {
+    fun deleteSkin(@RequestBody skin: Skin): ResponseEntity<Any> {
         return try {
             skinService.deleteSkin(skin.id)
             ResponseEntity.ok().build()
         } catch (e: NoSuchElementException) {
-            ResponseEntity(HttpStatus.NOT_FOUND)
+            ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
         } catch (e: IllegalStateException) {
-            ResponseEntity(HttpStatus.CONFLICT)
+            ResponseEntity(e.message ?: "Skin is on a weapon, delete that first", HttpStatus.CONFLICT)
         }
     }
 
