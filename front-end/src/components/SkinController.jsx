@@ -91,21 +91,17 @@ const SkinController = () => {
             });
     };
 
-    const filterSkins = () => {
-        axios.get('http://localhost:8080/skins/filter', { params: filterParams })
+    const filterSkins = (filter) => {
+        const filterCopy = { ...filter };
+
+        if (filterCopy.rarity === '') {
+            filterCopy.rarity = null;
+        }
+
+        axios.get('http://localhost:8080/skins/filter', { params: filterCopy })
             .then(response => {
                 setValuableSkins(response.data);
             });
-    };
-    
-    const clearFilters = () => {
-        setFilterSkin({
-            name: '',
-            rarity: 'Any',
-            price: '',
-            paintSeed: '',
-            float: ''
-        });
     };
 
     const handleNewSkinChange = (event) => {
@@ -121,31 +117,31 @@ const SkinController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (!newSkin.rarity) {
             setErrorMessage('Rarity must be selected');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (!newSkin.price || isNaN(newSkin.price) || newSkin.price < 0) {
             setErrorMessage('Price must be a positive number');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (!newSkin.paintSeed || isNaN(newSkin.paintSeed) || newSkin.paintSeed < 0 || newSkin.paintSeed > 1000) {
             setErrorMessage('Paint Seed must be a number between 0 and 1000');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (!newSkin.float || isNaN(newSkin.float) || newSkin.float < 0 || newSkin.float > 1) {
             setErrorMessage('Float must be a number between 0 and 1');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         createSkin(newSkin);
     };
 
@@ -155,7 +151,7 @@ const SkinController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         updateSkinPrice(skinId, newPrice);
     };
 
@@ -180,31 +176,25 @@ const SkinController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
-        if (filterParams.rarity && filterParams.rarity !== 'Any' && !['Common', 'Uncommon', 'Rare', 'Mythical', 'Legendary', 'Immortal', 'Arcana'].includes(filterParams.rarity)) {
-            setErrorMessage('Invalid rarity');
-            setTimeout(() => setErrorMessage(null), 5000);
-            return;
-        }
-    
+
         if (filterParams.price && (isNaN(filterParams.price) || filterParams.price < 0)) {
             setErrorMessage('Price must be a positive number');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (filterParams.paintSeed && (isNaN(filterParams.paintSeed))) {
             setErrorMessage('Paint Seed must be a number');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (filterParams.float && (isNaN(filterParams.float))) {
             setErrorMessage('Float must be a number');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         filterSkins(filterParams);
     };
 
@@ -217,6 +207,7 @@ const SkinController = () => {
             )}
 
             <h1>Skins</h1>
+
             <button className="button" onClick={() => setShowSkins(!showSkins)}>Toggle Show Skins</button>
             <div style={{ display: showSkins ? 'block' : 'none' }}>
                 {showSkins && currentSkins.length > 0 ? (
@@ -262,21 +253,23 @@ const SkinController = () => {
 
             <h2>Create a new skin</h2>
             <div className="form">
-                <input className="input-field" name="name" placeholder="Name" onChange={handleNewSkinChange} />
-                <select className="input-field" name="rarity" onChange={handleNewSkinChange}>
-                    <option value="">Select rarity</option>
-                    <option value="Common">Common</option>
-                    <option value="Uncommon">Uncommon</option>
-                    <option value="Rare">Rare</option>
-                    <option value="Mythical">Mythical</option>
-                    <option value="Legendary">Legendary</option>
-                    <option value="Ancient">Ancient</option>
-                    <option value="Immortal">Immortal</option>
-                </select>
-                <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} />
-                <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} />
-                <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} />
-                <button className="button" onClick={handleCreateSkin}>Create Skin</button>
+                <div className="form-group">
+                    <input className="input-field" name="name" placeholder="Name" onChange={handleNewSkinChange} />
+                    <select className="input-field" name="rarity" onChange={handleNewSkinChange}>
+                        <option value="">Select rarity</option>
+                        <option value="Common">Common</option>
+                        <option value="Uncommon">Uncommon</option>
+                        <option value="Rare">Rare</option>
+                        <option value="Mythical">Mythical</option>
+                        <option value="Legendary">Legendary</option>
+                        <option value="Ancient">Ancient</option>
+                        <option value="Immortal">Immortal</option>
+                    </select>
+                    <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} />
+                    <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} />
+                    <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} />
+                    <button className="button" onClick={handleCreateSkin}>Create Skin</button>
+                </div>
             </div>
 
             <h2>Delete a skin</h2>
@@ -288,13 +281,15 @@ const SkinController = () => {
             </div>
 
             <h2>Filter skins</h2>
+
             <div className="form">
-                <button onClick={() => setIsFilterModalOpen(!isFilterModalOpen)}>Toggle Filters</button>
-                <button onClick={clearFilters}>Clear Filters</button>
-                <button onClick={handleClearResults}>Clear Results</button>
+                <div className="form-group">
+                    <button onClick={() => setIsFilterModalOpen(!isFilterModalOpen)}>Toggle Filters</button>
+                    <button onClick={handleClearResults}>Clear Results</button>
+                </div>
                 {isFilterModalOpen && (
                     <div>
-                        <input className="input-field" name="skinId" placeholder="Skin ID" onChange={handleFilterParamsChange} />
+                        <input className="input-field" name="skinId" type="number" placeholder="Skin ID" onChange={handleFilterParamsChange} />
                         <input className="input-field" name="name" placeholder="Name" onChange={handleFilterParamsChange} />
                         <select className="input-field" name="rarity" onChange={handleFilterParamsChange}>
                             <option value="">Select rarity</option>
@@ -308,11 +303,11 @@ const SkinController = () => {
                         </select>
                         <input className="input-field" name="exterior" placeholder="Exterior" onChange={handleFilterParamsChange} />
                         <input className="input-field" name="price" placeholder="Price" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="paintSeed" placeholder="Paint Seed" onChange={handleFilterParamsChange} />
+                        <input className="input-field" name="paintSeed" type="number" placeholder="Paint Seed" onChange={handleFilterParamsChange} />
                         <input className="input-field" name="float" placeholder="Float" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="weaponId" placeholder="Weapon ID" onChange={handleFilterParamsChange} />
+                        <input className="input-field" name="weaponId" type="number" placeholder="Weapon ID" onChange={handleFilterParamsChange} />
                         <input className="input-field" name="weaponName" placeholder="Weapon Name" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="csgoCaseId" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} />
+                        <input className="input-field" name="csgoCaseId" type="number" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} />
                         <input className="input-field" name="csgoCaseName" placeholder="CSGO Case Name" onChange={handleFilterParamsChange} />
                         <button className="button" onClick={handleFilterSkins}>Filter Skins</button>
                     </div>
@@ -340,13 +335,13 @@ const SkinController = () => {
                                     <td>{skin.price}</td>
                                     <td>{skin.paintSeed}</td>
                                     <td>{skin.float}</td>
-
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 )}
             </div>
+
 
             <h2>Update skin price</h2>
             <div className="form">
