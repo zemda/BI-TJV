@@ -20,6 +20,8 @@ class SkinController (val skinService: SkinService){
             ResponseEntity(skin, HttpStatus.OK)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
+        } catch (e: Exception) {
+            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -38,6 +40,8 @@ class SkinController (val skinService: SkinService){
             ResponseEntity(createdSkin, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Skin already exists.", HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -51,6 +55,8 @@ class SkinController (val skinService: SkinService){
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Invalid new price", HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -64,6 +70,8 @@ class SkinController (val skinService: SkinService){
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
         } catch (e: IllegalStateException) {
             ResponseEntity(e.message ?: "Skin is on a weapon, delete that first", HttpStatus.CONFLICT)
+        } catch (e: Exception) {
+            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
