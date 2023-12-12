@@ -61,15 +61,15 @@ class WeaponController (val weaponService: WeaponService){
     }
 
     @DeleteMapping
-    @Operation(summary = "Delete a weapon by its id")
-    fun deleteWeapon(@PathVariable id: Long): ResponseEntity<Void> {
+    @Operation(summary = "Delete given weapon")
+    fun deleteWeapon(@RequestBody weapon: Weapon): ResponseEntity<Any> {
         return try {
-            weaponService.deleteWeapon(id)
+            weaponService.deleteWeapon(weapon.id)
             ResponseEntity(HttpStatus.NO_CONTENT)
         } catch (e: NoSuchElementException) {
-            ResponseEntity(HttpStatus.NOT_FOUND)
+            ResponseEntity(e.message ?: "Weapon not found", HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
-            ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 }
