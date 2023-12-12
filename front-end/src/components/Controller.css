@@ -61,3 +61,13 @@
     margin-right: 15px;
     transform: scale(2.7);
 }
+
+.notification {
+    background-color: #f44336;
+    padding: 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+}

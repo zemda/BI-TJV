@@ -20,6 +20,8 @@ const SkinController = () => {
     const indexOfFirstSkin = indexOfLastSkin - skinsPerPage;
     const currentSkins = skins.slice(indexOfFirstSkin, indexOfLastSkin);
 
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     useEffect(() => {
@@ -33,6 +35,8 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error fetching data: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
@@ -49,6 +53,8 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error creating skin: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
@@ -66,6 +72,8 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error updating skin price: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
@@ -78,7 +86,26 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error deleting skin: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
+    };
+
+    const filterSkins = () => {
+        axios.get('http://localhost:8080/skins/filter', { params: filterParams })
+            .then(response => {
+                setValuableSkins(response.data);
+            });
+    };
+    
+    const clearFilters = () => {
+        setFilterSkin({
+            name: '',
+            rarity: 'Any',
+            price: '',
+            paintSeed: '',
+            float: ''
+        });
     };
 
     const handleNewSkinChange = (event) => {
@@ -90,24 +117,45 @@ const SkinController = () => {
 
     const handleCreateSkin = () => {
         if (!newSkin || !newSkin.name || newSkin.name.length > 50) {
-            alert('Name must be 50 characters or less');
+            setErrorMessage('Name must be 50 characters or less');
+            setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-
-        if (newSkin.paintSeed < 0 || newSkin.paintSeed > 1000) {
-            alert('Paint Seed must be between 0 and 1000');
+    
+        if (!newSkin.rarity) {
+            setErrorMessage('Rarity must be selected');
+            setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-
-        if (newSkin.float < 0 || newSkin.float > 1) {
-            alert('Float must be between 0 and 1');
+    
+        if (!newSkin.price || isNaN(newSkin.price) || newSkin.price < 0) {
+            setErrorMessage('Price must be a positive number');
+            setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-
+    
+        if (!newSkin.paintSeed || isNaN(newSkin.paintSeed) || newSkin.paintSeed < 0 || newSkin.paintSeed > 1000) {
+            setErrorMessage('Paint Seed must be a number between 0 and 1000');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
+        if (!newSkin.float || isNaN(newSkin.float) || newSkin.float < 0 || newSkin.float > 1) {
+            setErrorMessage('Float must be a number between 0 and 1');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
         createSkin(newSkin);
     };
 
     const handleUpdateSkinPrice = () => {
+        if (!newPrice || isNaN(newPrice) || newPrice < 0) {
+            setErrorMessage('Price must be a positive number');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
         updateSkinPrice(skinId, newPrice);
     };
 
@@ -122,19 +170,52 @@ const SkinController = () => {
         });
     };
 
-    const handleFilterSkins = () => {
-        axios.get('http://localhost:8080/skins/filter', { params: filterParams })
-            .then(response => {
-                setValuableSkins(response.data);
-            });
-    };
-
     const handleClearResults = () => {
         setValuableSkins([]);
     };
 
+    const handleFilterSkins = () => {
+        if (filterParams.name && filterParams.name.length > 50) {
+            setErrorMessage('Name must be 50 characters or less');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
+        if (filterParams.rarity && filterParams.rarity !== 'Any' && !['Common', 'Uncommon', 'Rare', 'Mythical', 'Legendary', 'Immortal', 'Arcana'].includes(filterParams.rarity)) {
+            setErrorMessage('Invalid rarity');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
+        if (filterParams.price && (isNaN(filterParams.price) || filterParams.price < 0)) {
+            setErrorMessage('Price must be a positive number');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
+        if (filterParams.paintSeed && (isNaN(filterParams.paintSeed))) {
+            setErrorMessage('Paint Seed must be a number');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
+        if (filterParams.float && (isNaN(filterParams.float))) {
+            setErrorMessage('Float must be a number');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+    
+        filterSkins(filterParams);
+    };
+
     return (
         <div className="container">
+            {errorMessage && (
+                <div className="notification">
+                    {errorMessage}
+                </div>
+            )}
+
             <h1>Skins</h1>
             <button className="button" onClick={() => setShowSkins(!showSkins)}>Toggle Show Skins</button>
             <div style={{ display: showSkins ? 'block' : 'none' }}>
@@ -209,6 +290,7 @@ const SkinController = () => {
             <h2>Filter skins</h2>
             <div className="form">
                 <button onClick={() => setIsFilterModalOpen(!isFilterModalOpen)}>Toggle Filters</button>
+                <button onClick={clearFilters}>Clear Filters</button>
                 <button onClick={handleClearResults}>Clear Results</button>
                 {isFilterModalOpen && (
                     <div>
