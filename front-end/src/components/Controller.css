@@ -29,13 +29,6 @@
     margin-bottom: 10px;
     flex-basis: calc(33% - 20px);
 }
-
-
-.select-button-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
   
 .select-field {
     flex: 1;
