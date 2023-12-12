@@ -2,6 +2,8 @@ package cz.cvut.fit.tjv.cs_skin_system.controller
 
 import cz.cvut.fit.tjv.cs_skin_system.application.SkinService
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
+import io.swagger.v3.oas.annotations.Operation
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -11,33 +13,58 @@ import org.springframework.web.bind.annotation.*
 class SkinController (val skinService: SkinService){
 
     @GetMapping("/{id}")
-    fun getSkinById(@PathVariable id: Long): ResponseEntity<Skin> {
-        val skin = skinService.getSkinById(id)
-        return ResponseEntity.ok(skin)
+    @Operation(summary = "Fetch a skin by its id")
+    fun getSkinById(@PathVariable id: Long): ResponseEntity<Any> {
+        return try {
+            val skin = skinService.getSkinById(id)
+            ResponseEntity(skin, HttpStatus.OK)
+        } catch (e: NoSuchElementException) {
+            ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
+        }
     }
 
     @GetMapping
+    @Operation(summary = "Fetch all skins")
     fun getSkins(): ResponseEntity<List<Skin>> {
         val skins = skinService.getSkins()
         return ResponseEntity.ok(skins)
     }
 
     @PostMapping
+    @Operation(summary = "Create and optionally assign it a case")
     fun createSkin(@RequestBody skin: Skin, @RequestParam(required = false) caseId: Long?): ResponseEntity<Skin> {
-        val createdSkin = skinService.createSkin(skin, caseId)
-        return ResponseEntity.ok(createdSkin)
+        return try {
+            val createdSkin = skinService.createSkin(skin, caseId)
+            ResponseEntity(createdSkin, HttpStatus.CREATED)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PutMapping("/{id}/price")
-    fun updateSkinPrice(@PathVariable id: Long, @RequestParam newPrice: Double): ResponseEntity<Skin> {
-        val updatedSkin = skinService.updateSkinPrice(id, newPrice)
-        return ResponseEntity.ok(updatedSkin)
+    @Operation(summary = "Update price to a skin with given id")
+    fun updateSkinPrice(@PathVariable id: Long, @RequestParam newPrice: Double): ResponseEntity<Any> {
+        return try {
+            val updatedSkin = skinService.updateSkinPrice(id, newPrice)
+            ResponseEntity(updatedSkin, HttpStatus.OK)
+        } catch (e: NoSuchElementException) {
+            ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity(e.message ?: "Invalid new price", HttpStatus.BAD_REQUEST)
+        }
     }
 
     @DeleteMapping
+    @Operation(summary = "Delete given skin")
     fun deleteSkin(@RequestBody skin: Skin): ResponseEntity<Void> {
-        skinService.deleteSkin(skin.id)
-        return ResponseEntity.ok().build()
+        return try {
+            skinService.deleteSkin(skin.id)
+            ResponseEntity.ok().build()
+        } catch (e: NoSuchElementException) {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        } catch (e: IllegalStateException) {
+            ResponseEntity(HttpStatus.CONFLICT)
+        }
     }
 
     @GetMapping("/valuable")
@@ -52,12 +79,14 @@ class SkinController (val skinService: SkinService){
     }
 
     @GetMapping("/noWeapon")
+    @Operation(summary = "Fetch skins that we can apply to a weapon")
     fun getSkinsWithNoWeapon(): ResponseEntity<List<Skin>> {
         val skins = skinService.getSkinsWithNoWeapon()
         return ResponseEntity.ok(skins)
     }
 
     @GetMapping("/filter")
+    @Operation(summary = "Fetch skins that meet the parameters")
     fun filterSkins(@RequestParam(required = false) skinId: Long?,
                     @RequestParam(required = false) name: String?,
                     @RequestParam(required = false) rarity: String?,
