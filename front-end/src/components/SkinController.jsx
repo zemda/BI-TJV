@@ -6,6 +6,7 @@ const SkinController = () => {
     const [skins, setSkins] = useState([]);
     const [newSkin, setNewSkin] = useState({});
     const [skinId, setSkinId] = useState(null);
+    const [caseId, setCaseId] = useState(null);
     const [newPrice, setNewPrice] = useState(null);
     const [deleteSkinId, setDeleteSkinId] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -72,6 +73,20 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error updating skin price: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
+            });
+    };
+
+    const updateSkinDropsFrom = (skinId, caseId) => {
+        axios.put(`http://localhost:8080/skins/${skinId}/cases`, [caseId])
+            .then(response => {
+                console.log(response.data);
+                getSkins();
+                setSkinId(null);
+            })
+            .catch(error => {
+                console.error('Error updating skin drops from: ', error);
                 setErrorMessage(error.response.data);
                 setTimeout(() => setErrorMessage(null), 5000);
             });
@@ -153,6 +168,16 @@ const SkinController = () => {
         }
 
         updateSkinPrice(skinId, newPrice);
+    };
+
+    const handleUpdateSkinDropsFrom = () => {
+        if (!skinId || !caseId) {
+            setErrorMessage('Both Skin ID and Case ID must be provided');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
+        updateSkinDropsFrom(skinId, caseId);
     };
 
     const handleDeleteSkin = () => {
@@ -268,6 +293,7 @@ const SkinController = () => {
                     <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} />
                     <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} />
                     <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} />
+                    <input className="input-field" name="caseid" type="number" min="0" placeholder="Case ID (optional)" onChange={handleNewSkinChange} />
                     <button className="button" onClick={handleCreateSkin}>Create Skin</button>
                 </div>
             </div>
@@ -351,6 +377,17 @@ const SkinController = () => {
                     <button className="button" onClick={handleUpdateSkinPrice}>Update Price</button>
                 </div>
             </div>
+
+            <h2>Update Skin Drops From</h2>
+            <div className="form">
+                <div className="form-group">
+                    <input className="input-field" name="updateDropsFromIdSkin" type="number" placeholder="Skin ID" onChange={(e) => setSkinId(Math.ceil(e.target.value))} />
+                    <input className="input-field" name="updateDropsFromIdCase" type="number" placeholder="Case ID" onChange={(e) => setCaseId(Math.ceil(e.target.value))} />
+                    <button onClick={handleUpdateSkinDropsFrom}>Update</button>
+                </div>
+            </div>
+
+
         </div>
     );
 };
