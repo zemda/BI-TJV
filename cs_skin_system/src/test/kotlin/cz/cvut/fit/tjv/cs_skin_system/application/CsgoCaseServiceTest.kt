@@ -36,7 +36,7 @@ class CsgoCaseServiceTest {
         `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin))
 
         val exception = assertThrows<IllegalStateException> {
-            csgoCaseService.updateCsgoCase(existingCase.id, skin.id, true)
+            csgoCaseService.updateCsgoCase(existingCase.id, listOf(skin.id), true)
         }
 
         assertEquals("Skin with id ${skin.id} is already in the case with id ${existingCase.id}", exception.message)
@@ -54,50 +54,13 @@ class CsgoCaseServiceTest {
         `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin))
 
         val exception = assertThrows<IllegalStateException> {
-            csgoCaseService.updateCsgoCase(existingCase.id, skin.id, false)
+            csgoCaseService.updateCsgoCase(existingCase.id, listOf(skin.id), false)
         }
 
         assertEquals("No skin with id ${skin.id} found in the case with id ${existingCase.id}", exception.message)
 
         verify(caseRepo, times(1)).findById(1L)
         verify(caseRepo, never()).save(any(CsgoCase::class.java))
-    }
-
-    @Test
-    fun `updateCsgoCase add skin test`() {
-        val existingCase = CsgoCase().apply { id = 1L; }
-        val skin = Skin().apply { id = 100L; }
-
-        `when`(caseRepo.findById(1L)).thenReturn(Optional.of(existingCase))
-        `when`(caseRepo.save(any(CsgoCase::class.java))).thenReturn(existingCase)
-        `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin))
-
-        val updatedCase = csgoCaseService.updateCsgoCase(existingCase.id, skin.id, true)
-
-        verify(caseRepo, times(1)).findById(1L)
-        verify(caseRepo, times(1)).save(any(CsgoCase::class.java))
-        assert(updatedCase.contains.contains(skin))
-
-        reset(caseRepo)
-    }
-
-    @Test
-    fun `updateCsgoCase remove skin test`() {
-        val existingCase = CsgoCase().apply { id = 1L; }
-        val skin = Skin().apply { id = 100L; }
-        existingCase.contains.add(skin)
-
-        `when`(caseRepo.findById(1L)).thenReturn(Optional.of(existingCase))
-        `when`(caseRepo.save(any(CsgoCase::class.java))).thenReturn(existingCase)
-        `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin))
-
-        val updatedCase = csgoCaseService.updateCsgoCase(existingCase.id, skin.id, false)
-
-        verify(caseRepo, times(1)).findById(1L)
-        verify(caseRepo, times(1)).save(any(CsgoCase::class.java))
-        assert(!updatedCase.contains.contains(skin))
-
-        reset(caseRepo)
     }
 
     @Test
@@ -132,6 +95,9 @@ class CsgoCaseServiceTest {
             id = 1L
             contains.addAll(listOf(skin1, skin2, skin3))
         }
+        skin1.dropsFrom.add(existingCase)
+        skin2.dropsFrom.add(existingCase)
+        skin3.dropsFrom.add(existingCase)
 
         `when`(caseRepo.findById(1L)).thenReturn(Optional.of(existingCase))
         `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin1))

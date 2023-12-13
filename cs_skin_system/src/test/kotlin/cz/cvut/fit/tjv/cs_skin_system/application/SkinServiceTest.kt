@@ -3,6 +3,7 @@ import cz.cvut.fit.tjv.cs_skin_system.application.SkinService
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
+import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -25,7 +26,7 @@ class SkinServiceTest {
     lateinit var skinRepo: JPASkinRepository
 
     @Mock
-    lateinit var csgoCaseService: CsgoCaseService
+    lateinit var csgoCaseRepo: JPACsgoCaseRepository
 
 
     @Test
