@@ -1,13 +1,11 @@
 package cz.cvut.fit.tjv.cs_skin_system.domain
 
-import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.*
 import jakarta.persistence.*
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-
 
 @Entity
 @Table(name = "skin")
@@ -50,7 +48,7 @@ class Skin {
 
     @ManyToMany(targetEntity = CsgoCase::class)
     @JoinTable(
-        name = "skin_csog_case",
+        name = "skin_csgo_case",
         joinColumns = [JoinColumn(name = "id_skin")],
         inverseJoinColumns = [JoinColumn(name = "id_case")]
     )
