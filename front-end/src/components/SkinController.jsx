@@ -109,8 +109,10 @@ const SkinController = () => {
     const filterSkins = (filter) => {
         const filterCopy = { ...filter };
 
-        if (filterCopy.rarity === '') {
-            filterCopy.rarity = null;
+        for (let key in filterCopy) {
+            if (filterCopy[key] === '') {
+                filterCopy[key] = null;
+            }
         }
 
         axios.get('http://localhost:8080/skins/filter', { params: filterCopy })
