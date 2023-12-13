@@ -45,11 +45,25 @@
 
 .form-group {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: left;
+}
+
+.form-group > .input-field {
+    flex: 1 0 100%;
+    max-width: 250px;
+    margin-right: 5px;
+}
+
+@media screen and (min-width: 768px) {
+    .form-group > .input-field {
+        flex: 1;
+    }
 }
 
 .checkbox-container input[type="checkbox"] {
+    margin-top: 13px;
     margin-left: 15px;
     margin-right: 15px;
     transform: scale(2.7);
