@@ -3,6 +3,7 @@ package cz.cvut.fit.tjv.cs_skin_system.application
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
+import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
@@ -16,8 +17,8 @@ import kotlin.math.min
 
 @Service
 @Transactional
-class SkinService ( @Autowired var skinRepository: JPASkinRepository,
-                    @Autowired var csgoCaseService: CsgoCaseService
+class SkinService (@Autowired var skinRepository: JPASkinRepository,
+                   @Autowired var caseRepo : JPACsgoCaseRepository,
                   ) : SkinServiceInterface {
 
     override fun getSkinById(id: Long): Skin {
@@ -66,12 +67,29 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
         }
         skin.paintSeed = min(skin.paintSeed, 1000)
 
-        val createdSkin = skinRepository.save(skin)
         if (caseId != null) {
-            csgoCaseService.updateCsgoCase(caseId, skin.id, true)
+            val csgoCase = caseRepo.findById(caseId)
+                .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
+            skin.dropsFrom.add(csgoCase)
+            csgoCase.contains.add(skin)
+            caseRepo.save(csgoCase)
         }
+        return skinRepository.save(skin)
+    }
 
-        return createdSkin
+    override fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : Skin {
+        val skin = skinRepository.findById(skinId)
+            .orElseThrow { NoSuchElementException("No skin with id $skinId") }
+
+        for (caseId in caseIds) {
+            val csgoCase = caseRepo.findById(caseId)
+                .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
+            skin.dropsFrom.add(csgoCase)
+            csgoCase.contains.add(skin)
+            caseRepo.save(csgoCase)
+        }
+    
+        return skinRepository.save(skin)
     }
 
     override fun deleteSkin(skinId: Long){
@@ -81,6 +99,12 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
         if (skin.weapon != null) {
             throw IllegalStateException("Skin id $skinId is associated with weapon, Remove the weapon first")
         }
+
+        for (csgoCase in skin.dropsFrom) {
+            csgoCase.contains.remove(skin)
+            caseRepo.save(csgoCase)
+        }
+
         skinRepository.delete(skin)
     }
 
@@ -98,7 +122,6 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
                 float, weaponId, weaponName, csgoCaseId, csgoCaseName).all { it == null }) {
             return listOf()
         }
-
         val spec: Specification<Skin> = Specification.where{
                 root: Root<Skin>, _: CriteriaQuery<*>, cb: CriteriaBuilder ->
             skinId?.let { cb.equal(root.get<Long>("id"), it) }
@@ -114,8 +137,21 @@ class SkinService ( @Autowired var skinRepository: JPASkinRepository,
             paintSeed?.let { cb.equal(root.get<Int>("paintSeed"), it) }
         }.and { root, _, cb ->
             float?.let { cb.lessThanOrEqualTo(root.get("float"), it) }
+        }.and { root, _, cb ->
+            weaponId?.let { cb.equal(root.get<Weapon>("weapon").get<Long>("id"), it) }
+        }.and { root, _, cb ->
+            weaponName?.let { cb.equal(root.get<Weapon>("weapon").get<String>("name"), it) }
+        }.and { root, _, cb ->
+            csgoCaseId?.let {
+                val cases = root.join<Set<CsgoCase>, CsgoCase>("dropsFrom")
+                cb.equal(cases.get<Long>("id"), it)
+            }
+        }.and { root, _, cb ->
+            csgoCaseName?.let {
+                val cases = root.join<Set<CsgoCase>, CsgoCase>("dropsFrom")
+                cb.equal(cases.get<String>("name"), it)
+            }
         }
-        //TODO CASE, WEAPON
 
         return skinRepository.findAll(spec)
     }

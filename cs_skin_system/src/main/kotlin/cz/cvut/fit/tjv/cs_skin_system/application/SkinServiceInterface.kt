@@ -12,6 +12,8 @@ interface SkinServiceInterface {
 
     fun updateSkinPrice(skinId: Long, newPrice: Double) : Skin
 
+    fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : Skin
+
     fun deleteSkin(skinId: Long)
 
     fun getValuableSkins(rarity: String, price: Double, caseName: String, weapon: String): List<Skin>
