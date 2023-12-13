@@ -1,7 +1,6 @@
 package cz.cvut.fit.tjv.cs_skin_system.application
 
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
-import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import jakarta.transaction.Transactional
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service
 class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
                        @Autowired var skinRepo : JPASkinRepository
                       ) : CsgoCaseServiceInterface {
-
 
     override fun getCsgoCaseById(id: Long): CsgoCase {
         return caseRepo.findById(id).orElseThrow {
@@ -31,28 +29,6 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
         }
 
         return caseRepo.save(csgoCase)
-    }
-
-    override fun updateCsgoCase(caseId: Long, skinId: Long, addSkin: Boolean): CsgoCase {
-        val case = caseRepo.findById(caseId)
-            .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
-
-        val skin = skinRepo.findById(skinId)
-            .orElseThrow { NoSuchElementException("No skin with id $skinId") }
-
-        if (addSkin) {
-            val isAdded = case.contains.add(skin)
-            if (!isAdded) {
-                throw IllegalStateException("Skin with id $skinId is already in the case with id $caseId")
-            }
-        } else {
-            val wasRemoved = case.contains.remove(skin)
-            if (!wasRemoved) {
-                throw IllegalStateException("No skin with id $skinId found in the case with id $caseId")
-            }
-        }
-
-        return caseRepo.save(case)
     }
 
     override fun updateCsgoCase(caseId: Long, newPrice: Double): CsgoCase {
@@ -76,14 +52,15 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
                 .orElseThrow { NoSuchElementException("No skin with id $skinId") }
 
             if (addSkins) {
-                if (!csgoCase.contains.add(skin)) {
+                if (!csgoCase.contains.add(skin) || !skin.dropsFrom.add(csgoCase)) {
                     throw IllegalStateException("Skin with id $skinId is already in the case with id $caseId")
                 }
             } else {
-                if (!csgoCase.contains.remove(skin)) {
+                if (!csgoCase.contains.remove(skin) || !skin.dropsFrom.remove(csgoCase)) {
                     throw IllegalStateException("No skin with id $skinId found in the case with id $caseId")
                 }
             }
+            skinRepo.save(skin)
         }
 
         return caseRepo.save(csgoCase)
