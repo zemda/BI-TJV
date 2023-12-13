@@ -40,3 +40,19 @@
 .read-the-docs {
   color: #888;
 }
+
+.divider {
+    margin: 30px;
+    border: 0;
+    min-width: 600px;
+    height: 5px;
+    background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff);
+    background-size: 1400% 1400%;
+    animation: gradient 10s ease infinite;
+}
+
+@keyframes gradient {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
