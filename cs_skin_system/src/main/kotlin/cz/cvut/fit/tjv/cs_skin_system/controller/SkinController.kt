@@ -40,6 +40,8 @@ class SkinController (val skinService: SkinService){
             ResponseEntity(createdSkin, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Skin already exists.", HttpStatus.BAD_REQUEST)
+        } catch (e: NoSuchElementException) {
+            ResponseEntity(e.message ?: "No case with this id.", HttpStatus.BAD_REQUEST)
         } catch (e: Exception) {
             ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -55,6 +57,19 @@ class SkinController (val skinService: SkinService){
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Invalid new price", HttpStatus.BAD_REQUEST)
+        } catch (e: Exception) {
+            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @PutMapping("/{id}/cases")
+    @Operation(summary = "Update from which cases can skin drop")
+    fun updateSkinDropsFrom(@PathVariable id: Long, @RequestBody caseIds: List<Long>): ResponseEntity<Any> {
+        return try {
+            val updatedSkin = skinService.updateSkinDropsFrom(id, caseIds)
+            ResponseEntity(updatedSkin, HttpStatus.OK)
+        } catch (e: NoSuchElementException) {
+            ResponseEntity(e.message ?: "Skin or case not found", HttpStatus.NOT_FOUND)
         } catch (e: Exception) {
             ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
