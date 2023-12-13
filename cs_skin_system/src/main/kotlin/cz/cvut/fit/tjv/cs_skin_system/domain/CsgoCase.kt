@@ -1,9 +1,11 @@
 package cz.cvut.fit.tjv.cs_skin_system.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import jakarta.persistence.*
 import jakarta.validation.constraints.DecimalMin
 
-
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 @Entity
 @Table(name = "csgo_case")
 class CsgoCase {
