@@ -49,6 +49,7 @@ const SkinController = () => {
         })
             .then(response => {
                 console.log(response.data);
+                console.log(caseId);
                 getSkins();
                 setNewSkin({});
             })
@@ -159,7 +160,7 @@ const SkinController = () => {
             return;
         }
 
-        createSkin(newSkin);
+        createSkin(newSkin, caseId);
     };
 
     const handleUpdateSkinPrice = () => {
@@ -295,7 +296,7 @@ const SkinController = () => {
                     <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} />
                     <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} />
                     <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} />
-                    <input className="input-field" name="caseid" type="number" min="0" placeholder="Case ID (optional)" onChange={handleNewSkinChange} />
+                    <input className="input-field" name="caseid" type="number" min="0" placeholder="Case ID (optional)" onChange={(e) => setCaseId(e.target.value)} />
                     <button className="button" onClick={handleCreateSkin}>Create Skin</button>
                 </div>
             </div>
