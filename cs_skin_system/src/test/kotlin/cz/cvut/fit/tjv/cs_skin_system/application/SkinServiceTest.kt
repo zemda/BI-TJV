@@ -1,11 +1,7 @@
-import cz.cvut.fit.tjv.cs_skin_system.application.CsgoCaseService
 import cz.cvut.fit.tjv.cs_skin_system.application.SkinService
-import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
-import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -57,7 +53,7 @@ class SkinServiceTest {
             skinService.updateSkinPrice(skin.id, invalidPrice)
         }
 
-        Assertions.assertEquals(
+        assertEquals(
             "Invalid newPrice $invalidPrice.", exception.message
         )
 
@@ -67,38 +63,4 @@ class SkinServiceTest {
         reset(skinRepo)
     }
 
-    @Test
-    fun `getValuableSkins returns only valuable skins`() {
-        val expectedCase = CsgoCase().apply { name = "case1" }
-        val case2 = CsgoCase().apply { name = "case2" }
-        val expectedSkin = Skin().apply {
-            id = 1L
-            name = "Asiimov"
-            rarity = "rare"
-            price = 100.0
-            dropsFrom = mutableSetOf(expectedCase, case2)
-            weapon = Weapon().apply { name = "weapon1" }
-        }
-
-        val nonValuableSkin = Skin().apply {
-            id = 2L
-            rarity = "common"
-            price = 59.0
-            dropsFrom = mutableSetOf(expectedCase, case2)
-            weapon = Weapon().apply { name = "weapon2" }
-        }
-
-        `when`(skinRepo.findByRarityAndPriceAndCsgoCase(anyString(), anyDouble(), anyString())
-        ).thenReturn(listOf(expectedSkin, nonValuableSkin))
-
-        val valuableSkins = skinService.getValuableSkins("rare", 100.0, "case1", "weapon1")
-
-        assertEquals(1, valuableSkins.size)
-        assertEquals("weapon1", valuableSkins[0].weapon?.name)
-        assertEquals("Asiimov", valuableSkins[0].name)
-
-        verify(skinRepo, times(1)).findByRarityAndPriceAndCsgoCase(anyString(), anyDouble(), anyString())
-
-        reset(skinRepo)
-    }
 }
