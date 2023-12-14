@@ -15,7 +15,7 @@ const SkinController = () => {
 
     const [showSkins, setShowSkins] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [skinsPerPage,] = useState(20);
+    const [skinsPerPage,] = useState(10);
 
     const indexOfLastSkin = currentPage * skinsPerPage;
     const indexOfFirstSkin = indexOfLastSkin - skinsPerPage;
@@ -248,7 +248,7 @@ const SkinController = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {skins.map(skin => (
+                            {skins.slice((currentPage - 1) * skinsPerPage, currentPage * skinsPerPage).map(skin => (
                                 <tr key={skin.id}>
                                     <td>{skin.id}</td>
                                     <td>{skin.name}</td>
