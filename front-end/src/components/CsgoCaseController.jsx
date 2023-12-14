@@ -6,12 +6,20 @@ const CsgoCaseController = () => {
     const [cases, setCases] = useState([]);
     const [newCase, setNewCase] = useState({});
     const [deleteCaseId, setDeleteCaseId] = useState(null);
-    const [showCases, setShowCases] = useState(false);
     const [caseId, setCaseId] = useState(null);
     const [newPrice, setNewPrice] = useState(null);
     const [addSkins, setAddSkins] = useState(false);
     const [skinIdInput, setSkinIdInput] = useState('');
 
+    const [showCases, setShowCases] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [casesPerPage,] = useState(10);
+
+    const indexOfLastCase = currentPage * casesPerPage;
+    const indexOfFirstCase = indexOfLastCase - casesPerPage;
+    const currentCases = cases.slice(indexOfFirstCase, indexOfLastCase);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     useEffect(() => {
         getCases();
@@ -97,7 +105,7 @@ const CsgoCaseController = () => {
             <h1>CSGO Cases</h1>
             <button className="button" onClick={() => setShowCases(!showCases)}>Toggle Show Cases</button>
             <div style={{ display: showCases ? 'block' : 'none' }}>
-                {showCases && cases.length > 0 ? (
+                {showCases && currentCases.length > 0 ? (
                     <table className="table">
                         <thead>
                             <tr>
@@ -107,7 +115,7 @@ const CsgoCaseController = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {cases.map(csgoCase => (
+                            {cases.slice((currentPage - 1) * casesPerPage, currentPage * casesPerPage).map(csgoCase => (
                                 <tr key={csgoCase.id}>
                                     <td>{csgoCase.id}</td>
                                     <td>{csgoCase.name}</td>
@@ -119,6 +127,15 @@ const CsgoCaseController = () => {
                 ) : (
                     <p>Loading cases...</p>
                 )}
+
+                {/* Pages */}
+                <div>
+                    {[...Array(Math.ceil(cases.length / casesPerPage)).keys()].map(number => (
+                        <button key={number} onClick={() => paginate(number + 1)}>
+                            {number + 1}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <h2>Create a new case</h2>
