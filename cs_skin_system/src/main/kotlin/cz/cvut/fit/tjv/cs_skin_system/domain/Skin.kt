@@ -53,7 +53,14 @@ class Skin {
         joinColumns = [JoinColumn(name = "id_skin")],
         inverseJoinColumns = [JoinColumn(name = "id_case")]
     )
+    @JsonIgnore
     var dropsFrom: MutableSet<CsgoCase> = mutableSetOf()
+
+    @JsonProperty("dropsFrom")
+    fun ignoreDropsFrom(dropsFrom: Set<CsgoCase>) {
+        this.dropsFrom.clear()
+        this.dropsFrom.addAll(dropsFrom)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
