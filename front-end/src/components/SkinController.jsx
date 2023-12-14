@@ -91,7 +91,7 @@ const SkinController = () => {
     };
 
     const deleteSkin = (id) => {
-        axios.delete('http://localhost:8080/skins', { data: { id: id } })
+        axios.delete(`http://localhost:8080/skins/${id}`)
             .then(response => {
                 console.log(response.data);
                 getSkins();

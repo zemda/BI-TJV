@@ -53,11 +53,7 @@ const CsgoCaseController = () => {
     };
 
     const deleteCase = (id) => {
-        axios.delete(`http://localhost:8080/csgoCase`, {
-            data: {
-                id: id
-            }
-        })
+        axios.delete(`http://localhost:8080/csgoCase/${id}`)
             .then(response => {
                 console.log(response.data);
                 getCases();

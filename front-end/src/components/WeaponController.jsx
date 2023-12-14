@@ -109,12 +109,8 @@ const WeaponController = () => {
             });
     };
 
-    const deleteWeapon = () => {
-        axios.delete('http://localhost:8080/weapons', {
-            data: {
-                id: deleteWeaponId
-            }
-        })
+    const deleteWeapon = (id) => {
+        axios.delete(`http://localhost:8080/weapons/${id}`)
             .then(response => {
                 console.log(response.data);
                 getWeapons();
@@ -185,7 +181,7 @@ const WeaponController = () => {
             return;
         }
 
-        deleteWeapon();
+        deleteWeapon(deleteWeaponId);
     };
 
     return (
