@@ -84,6 +84,7 @@ const WeaponController = () => {
                 console.log(response.data);
                 getWeapons();
                 getSkinsWithNoWeapon();
+                setSelectedSkin(null)
             })
             .catch(error => {
                 console.error('Error creating weapon: ', error);
