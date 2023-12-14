@@ -32,7 +32,6 @@ const CsgoCaseController = () => {
             .then(response => {
                 console.log(response.data);
                 getCases();
-                setNewCase({});
             })
             .catch(error => {
                 console.error('Error creating case: ', error);
@@ -44,7 +43,6 @@ const CsgoCaseController = () => {
             .then(response => {
                 console.log(response.data);
                 getCases();
-                setDeleteCaseId(null);
             })
             .catch(error => {
                 console.error('Error deleting case: ', error);

@@ -103,8 +103,6 @@ const WeaponController = () => {
             .then(response => {
                 console.log(response.data);
                 getWeapons();
-                setUpdateTagWeaponId('');
-                setNewTag('');
             })
             .catch(error => {
                 console.error('Error updating weapon\'s tag: ', error);
@@ -122,7 +120,6 @@ const WeaponController = () => {
             .then(response => {
                 console.log(response.data);
                 getWeapons();
-                setDeleteWeaponId('');
                 getSkinsWithNoWeapon();
             })
             .catch(error => {
