@@ -160,6 +160,12 @@ const SkinController = () => {
     };
 
     const handleUpdateSkinPrice = () => {
+        if (!skinId) {
+            setErrorMessage('Skin ID can\'t be empty');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return; 
+        }
+
         if (!newPrice || isNaN(newPrice) || newPrice < 0) {
             setErrorMessage('Price must be a positive number');
             setTimeout(() => setErrorMessage(null), 5000);

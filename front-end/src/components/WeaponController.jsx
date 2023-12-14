@@ -84,8 +84,6 @@ const WeaponController = () => {
                 console.log(response.data);
                 getWeapons();
                 getSkinsWithNoWeapon();
-                setNewWeapon({});
-                setSelectedSkin(null);
             })
             .catch(error => {
                 console.error('Error creating weapon: ', error);
@@ -142,13 +140,13 @@ const WeaponController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (!newWeapon.type || newWeapon.type.length > 50) {
             setErrorMessage('Weapon type must be 1-50 characters long');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (newWeapon.tag && newWeapon.tag.length > 50) {
             setErrorMessage('Weapon tag must be 50 characters or less');
             setTimeout(() => setErrorMessage(null), 5000);
@@ -160,7 +158,7 @@ const WeaponController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         createWeapon();
     };
 
@@ -170,23 +168,23 @@ const WeaponController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         if (newTag && newTag.length > 50) {
             setErrorMessage('New tag must be 50 characters or less');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         updateWeaponTag();
     };
-    
+
     const handleDeleteWeapon = () => {
         if (!deleteWeaponId) {
             setErrorMessage('Weapon ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-    
+
         deleteWeapon();
     };
 
@@ -202,7 +200,7 @@ const WeaponController = () => {
             <button className="button" onClick={() => setShowWeapons(!showWeapons)}>Toggle Show Weapons</button>
 
             <div style={{ display: showWeapons ? 'block' : 'none' }}>
-                {currentWeapons.length > 0 && (
+                {showWeapons && currentWeapons.length > 0 ? (
                     <table className="table">
                         <thead>
                             <tr>
@@ -227,7 +225,10 @@ const WeaponController = () => {
                             ))}
                         </tbody>
                     </table>
+                ) : (
+                    <p>Loading skins...</p>
                 )}
+
                 {/* Pages */}
                 <div>
                     {[...Array(Math.ceil(weapons.length / weaponsPerPage)).keys()].map(number => (

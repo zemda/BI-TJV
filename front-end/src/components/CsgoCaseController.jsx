@@ -19,6 +19,8 @@ const CsgoCaseController = () => {
     const indexOfFirstCase = indexOfLastCase - casesPerPage;
     const currentCases = cases.slice(indexOfFirstCase, indexOfLastCase);
 
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     useEffect(() => {
@@ -32,6 +34,8 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error fetching data: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
@@ -43,33 +47,26 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error creating case: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
     const deleteCase = (id) => {
-        axios.delete(`http://localhost:8080/csgoCase/${id}`)
+        axios.delete(`http://localhost:8080/csgoCase`, {
+            data: {
+                id: id
+            }
+        })
             .then(response => {
                 console.log(response.data);
                 getCases();
             })
             .catch(error => {
                 console.error('Error deleting case: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
-    };
-
-    const handleNewCaseChange = (event) => {
-        setNewCase({
-            ...newCase,
-            [event.target.name]: event.target.value
-        });
-    };
-
-    const handleCreateCase = () => {
-        createCase(newCase);
-    };
-
-    const handleDeleteCase = () => {
-        deleteCase(deleteCaseId);
     };
 
     const changeCasePrice = (caseId, newPrice) => {
@@ -80,12 +77,12 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error changing case price: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
-
-    const addOrRemoveSkinsToCase = (caseId, skinIdInput, addSkins) => {
-        const skinIds = skinIdInput.split(',').map(Number);
+    const addOrRemoveSkinsToCase = (caseId, skinIds, addSkins) => {
         axios.put(`http://localhost:8080/csgoCase/${caseId}/addSkins`, skinIds, {
             params: {
                 addSkins: addSkins
@@ -97,11 +94,83 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error adding or removing skins to case: ', error);
+                setErrorMessage(error.response.data);
+                setTimeout(() => setErrorMessage(null), 5000);
             });
     };
 
+    const handleNewCaseChange = (event) => {
+        setNewCase({
+            ...newCase,
+            [event.target.name]: event.target.value
+        });
+    };
+
+    const handleCreateCase = () => {
+        if (!newCase || !newCase.name || newCase.name.lenght > 50) {
+            setErrorMessage('Case name must be 1-50 characters long');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
+        if (!newCase.price || isNaN(newCase.price) || !newCase.price < 0) {
+            setErrorMessage('Case price must be a positive number');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
+        createCase(newCase);
+    };
+
+    const handleDeleteCase = () => {
+        if (!deleteCaseId) {
+            setErrorMessage('Case ID can\'t be empty');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return; 
+        }
+        deleteCase(deleteCaseId);
+    };
+
+    const handleChangeCasePrice = () => {
+        if (!caseId) {
+            setErrorMessage('Case ID can\'t be empty');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return; 
+        }
+
+        if (!newPrice || isNaN(newPrice) || newPrice < 0) {
+            setErrorMessage('Price must be a positive number');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
+        changeCasePrice(caseId, newPrice);
+    }
+
+    const handleAddOrRemoveSkinsToCase = () => {
+        if (!caseId) {
+            setErrorMessage('Case ID can\'t be empty');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return; 
+        }
+        const regex = /^(\d+(,\d+)*)?$/;
+        if (!regex.test(skinIdInput)) {
+            setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+        const skinIds = skinIdInput.split(',').map(Number);
+        addOrRemoveSkinsToCase(caseId, skinIds, addSkins);
+    }
+
     return (
         <div className="container">
+            {errorMessage && (
+                <div className="notification">
+                    {errorMessage}
+                </div>
+            )}
+
             <h1>CSGO Cases</h1>
             <button className="button" onClick={() => setShowCases(!showCases)}>Toggle Show Cases</button>
             <div style={{ display: showCases ? 'block' : 'none' }}>
@@ -160,7 +229,7 @@ const CsgoCaseController = () => {
                 <div className="form-group">
                     <input className="input-field" name="caseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setCaseId(Math.ceil(e.target.value))} />
                     <input className="input-field" name="newPrice" type="number" step="0.01" placeholder="New Price" onChange={(e) => setNewPrice(parseFloat(e.target.value))} />
-                    <button className="button" onClick={() => changeCasePrice(caseId, newPrice)}>Change Price</button>
+                    <button className="button" onClick={handleChangeCasePrice}>Change Price</button>
                 </div>
             </div>
 
@@ -172,7 +241,7 @@ const CsgoCaseController = () => {
                     <div className="checkbox-container">
                         <input className="input-field" name="addSkins" type="checkbox" onChange={(e) => setAddSkins(e.target.checked)} />
                     </div>
-                    <button className="button" onClick={() => addOrRemoveSkinsToCase(caseId, skinIdInput, addSkins)}>Add/Remove Skins</button>
+                    <button className="button" onClick={handleAddOrRemoveSkinsToCase}>Add/Remove Skins</button>
                 </div>
             </div>
 
