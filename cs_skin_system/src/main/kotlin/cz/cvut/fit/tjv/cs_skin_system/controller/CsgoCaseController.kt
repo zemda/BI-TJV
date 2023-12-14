@@ -16,7 +16,7 @@ class CsgoCaseController(private val csgoCaseService: CsgoCaseService) {
     @Operation(summary = "Get a CSGO case by its id")
     fun getCsgoCaseById(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
-            val csgoCase = csgoCaseService.getCsgoCaseById(id)
+            val csgoCase = csgoCaseService.getById(id)
             ResponseEntity(csgoCase, HttpStatus.OK)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Case not found", HttpStatus.NOT_FOUND)
@@ -27,14 +27,14 @@ class CsgoCaseController(private val csgoCaseService: CsgoCaseService) {
 
     @GetMapping
     fun getCsgoCases(): ResponseEntity<List<CsgoCase>> {
-        return ResponseEntity.ok(csgoCaseService.getCsgoCases())
+        return ResponseEntity.ok(csgoCaseService.getAll())
     }
 
     @PostMapping
     @Operation(summary = "Create a CSGO case")
     fun createCsgoCase(@RequestBody csgoCase: CsgoCase): ResponseEntity<Any> {
         return try {
-            val createdCsgoCase = csgoCaseService.createCsgoCase(csgoCase)
+            val createdCsgoCase = csgoCaseService.create(csgoCase)
             ResponseEntity(createdCsgoCase, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Case name already exists", HttpStatus.CONFLICT)
@@ -78,11 +78,11 @@ class CsgoCaseController(private val csgoCaseService: CsgoCaseService) {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete a CSGO case")
-    fun deleteCsgoCase(@RequestBody csgoCase: CsgoCase): ResponseEntity<Any> {
+    fun deleteCsgoCase(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
-            csgoCaseService.deleteCsgoCase(csgoCase)
+            csgoCaseService.deleteById(id)
             ResponseEntity(HttpStatus.NO_CONTENT)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "CSGO Case not found", HttpStatus.NOT_FOUND)

@@ -19,15 +19,15 @@ import kotlin.math.min
 @Transactional
 class SkinService (@Autowired var skinRepository: JPASkinRepository,
                    @Autowired var caseRepo : JPACsgoCaseRepository,
-                  ) : SkinServiceInterface {
+                  ) : SkinServiceInterface, CrudServiceInterface<Skin, Long> {
 
-    override fun getSkinById(id: Long): Skin {
+    override fun getById(id: Long): Skin {
         return skinRepository.findById(id).orElseThrow {
                 NoSuchElementException("No skin with id $id")
         }
     }
 
-    override fun getSkins(): List<Skin> {
+    override fun getAll(): List<Skin> {
         return skinRepository.findAll()
     }
 
@@ -43,38 +43,46 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
         return skinRepository.save(skin)
     }
 
-    override fun createSkin(skin: Skin, caseId: Long?): Skin {
-        val weaponId = skin.weapon?.id
+    /**
+     * Creates a new Skin entity and saves it to the database.
+     * If a caseId is provided, the method also adds a relation between the Skin and the Case.
+     *
+     * @param entity The Skin entity to be created.
+     * @param opt The ID of the Case. This parameter is optional.
+     * @return The created Skin entity.
+     */
+    override fun create(entity: Skin, opt: Long?): Skin {
+        val weaponId = entity.weapon?.id
         if (weaponId != null && skinRepository
             .existsByNameAndPaintSeedAndFloatAndWeaponId(
-                skin.name,
-                skin.paintSeed,
-                skin.float,
+                entity.name,
+                entity.paintSeed,
+                entity.float,
                 weaponId)
             ) {
             throw IllegalArgumentException("Skin already exists.")
         }
 
-        skin.exterior = when {
-            skin.float <= 0.07 -> "Factory New"
-            skin.float <= 0.15 -> "Minimal Wear"
-            skin.float <= 0.37 -> "Field-Tested"
-            skin.float <= 0.44 -> "Well-Worn"
+        entity.exterior = when {
+            entity.float <= 0.07 -> "Factory New"
+            entity.float <= 0.15 -> "Minimal Wear"
+            entity.float <= 0.37 -> "Field-Tested"
+            entity.float <= 0.44 -> "Well-Worn"
             else -> {
-                skin.float = min(skin.float, 1.0)
+                entity.float = min(entity.float, 1.0)
                 "Battle-Scarred"
             }
         }
-        skin.paintSeed = min(skin.paintSeed, 1000)
+        entity.paintSeed = min(entity.paintSeed, 1000)
 
-        if (caseId != null) {
-            val csgoCase = caseRepo.findById(caseId)
-                .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
-            skin.dropsFrom.add(csgoCase)
-            csgoCase.contains.add(skin)
+        if (opt != null) {
+            val csgoCase = caseRepo.findById(opt)
+                .orElseThrow { NoSuchElementException("No csgo case with id $opt") }
+            entity.dropsFrom.add(csgoCase)
+            csgoCase.contains.add(entity)
             caseRepo.save(csgoCase)
         }
-        return skinRepository.save(skin)
+        return skinRepository.save(entity)
     }
 
     override fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : Skin {
@@ -92,12 +100,12 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
         return skinRepository.save(skin)
     }
 
-    override fun deleteSkin(skinId: Long){
-        val skin = skinRepository.findById(skinId).
-            orElseThrow { NoSuchElementException("No skin with id $skinId") }
+    override fun deleteById(id: Long){
+        val skin = skinRepository.findById(id).
+            orElseThrow { NoSuchElementException("No skin with id $id") }
 
         if (skin.weapon != null) {
-            throw IllegalStateException("Skin id $skinId is associated with weapon, Remove the weapon first")
+            throw IllegalStateException("Skin id $id is associated with weapon, Remove the weapon first")
         }
 
         for (csgoCase in skin.dropsFrom) {
@@ -108,13 +116,6 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
         skinRepository.delete(skin)
     }
 
-    //TODO: remove getValuableSkins later ig
-    override fun getValuableSkins(rarity: String, price: Double, caseName: String, weapon: String): List<Skin> {
-        val skinsFromRepo = skinRepository.findByRarityAndPriceAndCsgoCase(rarity, price, caseName)
-        val valuableSkins = skinsFromRepo.filter { it.weapon?.name == weapon}
-
-        return valuableSkins
-    }
     override fun filterSkins(skinId: Long?, name: String?, rarity: String?, exterior: String?,
                     price: Double?, paintSeed: Int?, float: Double?,
                     weaponId: Long?, weaponName: String?, csgoCaseId: Long?, csgoCaseName: String?): List<Skin> {

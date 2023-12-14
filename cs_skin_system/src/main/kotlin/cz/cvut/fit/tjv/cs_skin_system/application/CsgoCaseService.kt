@@ -11,24 +11,36 @@ import org.springframework.stereotype.Service
 @Transactional
 class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
                        @Autowired var skinRepo : JPASkinRepository
-                      ) : CsgoCaseServiceInterface {
+                      ) : CsgoCaseServiceInterface, CrudServiceInterface<CsgoCase, Long> {
 
-    override fun getCsgoCaseById(id: Long): CsgoCase {
+    override fun getById(id: Long): CsgoCase {
         return caseRepo.findById(id).orElseThrow {
             NoSuchElementException("No case with id $id")
         }
     }
 
-    override fun getCsgoCases(): List<CsgoCase> {
+    override fun getAll(): List<CsgoCase> {
         return caseRepo.findAll()
     }
 
-    override fun createCsgoCase(csgoCase: CsgoCase): CsgoCase {
-        if (caseRepo.existsByName(csgoCase.name)) {
-            throw IllegalArgumentException("Case with name ${csgoCase.name} already exists.")
+    override fun create(entity: CsgoCase, opt: Long?): CsgoCase {
+        if (caseRepo.existsByName(entity.name)) {
+            throw IllegalArgumentException("Case with name ${entity.name} already exists.")
         }
 
-        return caseRepo.save(csgoCase)
+        return caseRepo.save(entity)
+    }
+
+    override fun deleteById(id: Long) {
+        val case = caseRepo.findById(id).
+        orElseThrow{ NoSuchElementException("No case with id $id") }
+
+        for (skin in case.contains) {
+            skin.dropsFrom.remove(case)
+            skinRepo.save(skin)
+        }
+
+        caseRepo.delete(case)
     }
 
     override fun updateCsgoCase(caseId: Long, newPrice: Double): CsgoCase {
@@ -66,11 +78,4 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
         return caseRepo.save(csgoCase)
     }
 
-    override fun deleteCsgoCase(csgoCase: CsgoCase) {
-        if (caseRepo.existsById(csgoCase.id)) {
-            caseRepo.delete(csgoCase)
-        } else {
-            throw NoSuchElementException("No case with id ${csgoCase.id}")
-        }
-    }
 }

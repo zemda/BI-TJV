@@ -12,16 +12,54 @@ import java.util.NoSuchElementException
 @Transactional
 class WeaponService (var weaponRepo : JPAWeaponRepository,
                      var skinRepo: JPASkinRepository
-                    ) : WeaponServiceInterface{
+                    ) : WeaponServiceInterface, CrudServiceInterface<Weapon, Long> {
 
-    override fun getWeaponById(id: Long): Weapon {
+    override fun getById(id: Long): Weapon {
         return weaponRepo.findById(id).orElseThrow{
             NoSuchElementException("Weapon with id $id not found.")
         }
     }
 
-    override fun getWeapons(): List<Weapon> {
+    override fun getAll(): List<Weapon> {
         return weaponRepo.findAll()
+    }
+
+    /**
+     * Creates a new Weapon entity and saves it to the database.
+     * SkinId must be provided, the method adds virtual relation between the Weapon and Skin
+     *
+     * @param entity The Weapon entity to be created.
+     * @param opt The ID of the skin with which is weapon painted, this parameter is not optional here
+     * @return The created Weapon entity.
+     */
+    override fun create(entity: Weapon, opt: Long?): Weapon {
+        if (opt == null) {
+            throw IllegalArgumentException("A skinId must be provided.")
+        }
+        val skin = skinRepo.findById(opt).orElseThrow {
+            NoSuchElementException("Invalid skinId.")
+        }
+        if (skin.weapon != null){
+            throw IllegalStateException("This skin is already on a weapon.")
+        }
+        entity.skin = skin
+
+        val createdWeapon = weaponRepo.save(entity)
+        skin.weapon = createdWeapon
+
+        skinRepo.save(skin)
+
+        return createdWeapon
+    }
+
+    override fun deleteById(id: Long) {
+        if (weaponRepo.existsById(id)) {
+            val weapon = getById(id)
+            weapon.skin?.weapon = null
+            weaponRepo.delete(weapon)
+        }else{
+            throw NoSuchElementException("No weapon with id $id.")
+        }
     }
 
     override fun updateWeaponTag(weaponId: Long, newTag: String): Weapon {
@@ -32,33 +70,4 @@ class WeaponService (var weaponRepo : JPAWeaponRepository,
 
         return weaponRepo.save(existingWeapon)
     }
-
-    override fun createWeapon(weapon: Weapon, skinId: Long): Weapon {
-        val skin = skinRepo.findById(skinId).orElseThrow {
-            NoSuchElementException("Invalid skinId.")
-        }
-        if (skin.weapon != null){
-            throw IllegalStateException("This skin is already on a weapon.")
-        }
-        weapon.skin = skin
-
-        val createdWeapon = weaponRepo.save(weapon)
-        skin.weapon = createdWeapon
-
-        skinRepo.save(skin)
-
-        return createdWeapon
-    }
-
-
-    override fun deleteWeapon(weaponId: Long) {
-        if (weaponRepo.existsById(weaponId)) {
-            val weapon = getWeaponById(weaponId)
-            weapon.skin?.weapon = null
-            weaponRepo.delete(weapon)
-        }else{
-            throw NoSuchElementException("No weapon with id $weaponId.")
-        }
-    }
-
 }

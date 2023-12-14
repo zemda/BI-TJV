@@ -16,7 +16,7 @@ class WeaponController (val weaponService: WeaponService){
     @Operation(summary = "Get a weapon by its id")
     fun getWeaponById(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
-            val weapon = weaponService.getWeaponById(id)
+            val weapon = weaponService.getById(id)
             ResponseEntity(weapon, HttpStatus.OK)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Weapon not found", HttpStatus.NOT_FOUND)
@@ -28,7 +28,7 @@ class WeaponController (val weaponService: WeaponService){
     @GetMapping
     @Operation(summary = "Fetch all skins")
     fun getWeapons(): ResponseEntity<List<Weapon>> {
-        val weapons = weaponService.getWeapons()
+        val weapons = weaponService.getAll()
         return ResponseEntity.ok(weapons)
     }
 
@@ -36,7 +36,7 @@ class WeaponController (val weaponService: WeaponService){
     @Operation(summary = "Create a weapon")
     fun createWeapon(@RequestBody weapon: Weapon, @RequestParam skinId: Long): ResponseEntity<Any> {
         return try {
-            val createdWeapon = weaponService.createWeapon(weapon, skinId)
+            val createdWeapon = weaponService.create(weapon, skinId)
             ResponseEntity(createdWeapon, HttpStatus.CREATED)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Invalid skinId", HttpStatus.NOT_FOUND)
@@ -60,11 +60,11 @@ class WeaponController (val weaponService: WeaponService){
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete given weapon")
-    fun deleteWeapon(@RequestBody weapon: Weapon): ResponseEntity<Any> {
+    fun deleteWeapon(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
-            weaponService.deleteWeapon(weapon.id)
+            weaponService.deleteById(id)
             ResponseEntity(HttpStatus.NO_CONTENT)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Weapon not found", HttpStatus.NOT_FOUND)

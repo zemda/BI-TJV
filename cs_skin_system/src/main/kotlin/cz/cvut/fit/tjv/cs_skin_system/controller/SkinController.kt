@@ -16,7 +16,7 @@ class SkinController (val skinService: SkinService){
     @Operation(summary = "Fetch a skin by its id")
     fun getSkinById(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
-            val skin = skinService.getSkinById(id)
+            val skin = skinService.getById(id)
             ResponseEntity(skin, HttpStatus.OK)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
@@ -28,7 +28,7 @@ class SkinController (val skinService: SkinService){
     @GetMapping
     @Operation(summary = "Fetch all skins")
     fun getSkins(): ResponseEntity<List<Skin>> {
-        val skins = skinService.getSkins()
+        val skins = skinService.getAll()
         return ResponseEntity.ok(skins)
     }
 
@@ -36,7 +36,7 @@ class SkinController (val skinService: SkinService){
     @Operation(summary = "Create and optionally assign it a case")
     fun createSkin(@RequestBody skin: Skin, @RequestParam(required = false) caseId: Long?): ResponseEntity<Any> {
         return try {
-            val createdSkin = skinService.createSkin(skin, caseId)
+            val createdSkin = skinService.create(skin, caseId)
             ResponseEntity(createdSkin, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Skin already exists.", HttpStatus.BAD_REQUEST)
@@ -75,12 +75,12 @@ class SkinController (val skinService: SkinService){
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete given skin")
-    fun deleteSkin(@RequestBody skin: Skin): ResponseEntity<Any> {
+    fun deleteSkin(@PathVariable id: Long): ResponseEntity<Any> {
         return try {
-            skinService.deleteSkin(skin.id)
-            ResponseEntity.ok().build()
+            skinService.deleteById(id)
+            ResponseEntity(HttpStatus.NO_CONTENT)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
         } catch (e: IllegalStateException) {
@@ -88,17 +88,6 @@ class SkinController (val skinService: SkinService){
         } catch (e: Exception) {
             ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
-    }
-
-    @GetMapping("/valuable")
-    fun getValuableSkins(
-        @RequestParam rarity: String,
-        @RequestParam price: Double,
-        @RequestParam caseName: String,
-        @RequestParam weapon: String): ResponseEntity<List<Skin>> {
-
-        val valuableSkins = skinService.getValuableSkins(rarity, price, caseName, weapon)
-        return ResponseEntity.ok(valuableSkins)
     }
 
     @GetMapping("/noWeapon")
