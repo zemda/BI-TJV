@@ -45,7 +45,7 @@ const WeaponController = () => {
 
     const [showWeapons, setShowWeapons] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [weaponsPerPage,] = useState(20);
+    const [weaponsPerPage,] = useState(10);
 
     const indexOfLastWeapon = currentPage * weaponsPerPage;
     const indexOfFirstWeapon = indexOfLastWeapon - weaponsPerPage;
@@ -215,7 +215,7 @@ const WeaponController = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {weapons.map(weapon => (
+                            {weapons.slice((currentPage - 1) * weaponsPerPage, currentPage * weaponsPerPage).map(weapon => (
                                 <tr key={weapon.id}>
                                     <td>{weapon.id}</td>
                                     <td>{weapon.name}</td>
