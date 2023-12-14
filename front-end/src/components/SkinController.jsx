@@ -69,8 +69,6 @@ const SkinController = () => {
             .then(response => {
                 console.log(response.data);
                 getSkins();
-                setSkinId(null);
-                setNewPrice(null);
             })
             .catch(error => {
                 console.error('Error updating skin price: ', error);
@@ -84,7 +82,6 @@ const SkinController = () => {
             .then(response => {
                 console.log(response.data);
                 getSkins();
-                setSkinId(null);
             })
             .catch(error => {
                 console.error('Error updating skin drops from: ', error);
@@ -98,7 +95,6 @@ const SkinController = () => {
             .then(response => {
                 console.log(response.data);
                 getSkins();
-                setDeleteSkinId(null);
             })
             .catch(error => {
                 console.error('Error deleting skin: ', error);
