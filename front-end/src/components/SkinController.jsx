@@ -5,10 +5,14 @@ import './Controller.css';
 const SkinController = () => {
     const [skins, setSkins] = useState([]);
     const [newSkin, setNewSkin] = useState({});
-    const [skinId, setSkinId] = useState(null);
-    const [caseId, setCaseId] = useState(null);
-    const [newPrice, setNewPrice] = useState(null);
-    const [deleteSkinId, setDeleteSkinId] = useState(null);
+
+    const [skinIdDelete, setSkinIdDelete] = useState('');
+    const [skinIdUpdatePrice, setSkinIdUpdatePrice] = useState('');
+    const [skinIdDropsFrom, setSkinIdDropsFrom] = useState('');
+    const [caseIdDropsFrom, setCaseIdDropsFrom] = useState('');
+    const [caseIdCreateSkin, setCaseIdCreateSkin] = useState('');
+    
+    const [newPrice, setNewPrice] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [filterSkins, setFilterSkins] = useState([]);
     const [filterParams, setFilterParams] = useState({});
@@ -57,9 +61,9 @@ const SkinController = () => {
         })
             .then(response => {
                 console.log(response.data);
-                console.log(caseId);
                 getSkins();
                 setNewSkin({});
+                setCaseIdCreateSkin('');
             })
             .catch(error => {
                 console.error('Error creating skin: ', error);
@@ -68,8 +72,8 @@ const SkinController = () => {
             });
     };
 
-    const updateSkinPrice = (id, newPrice) => {
-        axios.put(`http://localhost:8080/skins/${id}/price`, null, {
+    const updateSkinPrice = (skinId, newPrice) => {
+        axios.put(`http://localhost:8080/skins/${skinId}/price`, null, {
             params: {
                 newPrice: newPrice
             }
@@ -77,6 +81,9 @@ const SkinController = () => {
             .then(response => {
                 console.log(response.data);
                 getSkins();
+                setSkinIdUpdatePrice('');
+                setNewPrice('');
+
             })
             .catch(error => {
                 console.error('Error updating skin price: ', error);
@@ -90,6 +97,9 @@ const SkinController = () => {
             .then(response => {
                 console.log(response.data);
                 getSkins();
+                setSkinIdDropsFrom('');
+                setCaseIdDropsFrom('');
+                
             })
             .catch(error => {
                 console.error('Error updating skin drops from: ', error);
@@ -98,11 +108,12 @@ const SkinController = () => {
             });
     };
 
-    const deleteSkin = (id) => {
-        axios.delete(`http://localhost:8080/skins/${id}`)
+    const deleteSkin = (skinId) => {
+        axios.delete(`http://localhost:8080/skins/${skinId}`)
             .then(response => {
                 console.log(response.data);
                 getSkins();
+                setSkinIdDelete('');
             })
             .catch(error => {
                 console.error('Error deleting skin: ', error);
@@ -164,11 +175,11 @@ const SkinController = () => {
             return;
         }
 
-        createSkin(newSkin, caseId);
+        createSkin(newSkin, caseIdCreateSkin);
     };
 
     const handleUpdateSkinPrice = () => {
-        if (!skinId) {
+        if (!skinIdUpdatePrice) {
             setErrorMessage('Skin ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
@@ -180,21 +191,27 @@ const SkinController = () => {
             return;
         }
 
-        updateSkinPrice(skinId, newPrice);
+        updateSkinPrice(skinIdUpdatePrice, newPrice);
     };
 
     const handleUpdateSkinDropsFrom = () => {
-        if (!skinId || !caseId) {
-            setErrorMessage('Both Skin ID and Case ID must be provided');
+        if (!skinIdDropsFrom) {
+            setErrorMessage('Skin ID must be provided');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
 
-        updateSkinDropsFrom(skinId, caseId);
+        if (!caseIdDropsFrom) {
+            setErrorMessage('Case ID must be provided');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
+        updateSkinDropsFrom(skinIdDropsFrom, caseIdDropsFrom);
     };
 
     const handleDeleteSkin = () => {
-        deleteSkin(deleteSkinId);
+        deleteSkin(skinIdDelete);
     };
 
     const handleFilterParamsChange = (e) => {
@@ -206,6 +223,10 @@ const SkinController = () => {
 
     const handleClearResults = () => {
         setFilterSkins([]);
+    };
+
+    const handleClearFilters = () => {
+        setFilterParams({});
     };
 
     const handleFilterSkins = () => {
@@ -291,8 +312,8 @@ const SkinController = () => {
             <h2>Create a new skin</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="name" placeholder="Name" onChange={handleNewSkinChange} />
-                    <select className="input-field" name="rarity" onChange={handleNewSkinChange}>
+                    <input className="input-field" name="name" placeholder="Name" onChange={handleNewSkinChange} value={newSkin.name || ''} />
+                    <select className="input-field" name="rarity" onChange={handleNewSkinChange} value={newSkin.rarity || ''}>
                         <option value="">Select rarity</option>
                         <option value="Common">Common</option>
                         <option value="Uncommon">Uncommon</option>
@@ -302,10 +323,10 @@ const SkinController = () => {
                         <option value="Ancient">Ancient</option>
                         <option value="Immortal">Immortal</option>
                     </select>
-                    <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} />
-                    <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} />
-                    <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} />
-                    <input className="input-field" name="caseid" type="number" min="0" placeholder="Case ID (optional)" onChange={(e) => setCaseId(e.target.value)} />
+                    <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} value={newSkin.price || ''} />
+                    <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} value={newSkin.paintSeed || ''} />
+                    <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} value={newSkin.float || ''} />
+                    <input className="input-field" name="caseid" type="number" min="0" placeholder="Case ID (optional)" onChange={(e) => setCaseIdCreateSkin(e.target.value)} value={caseIdCreateSkin} />
                     <button className="button" onClick={handleCreateSkin}>Create Skin</button>
                 </div>
             </div>
@@ -313,23 +334,23 @@ const SkinController = () => {
             <h2>Delete a skin</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="deleteSkinId" type="number" step="1" placeholder="Skin ID" onChange={(e) => setDeleteSkinId(Math.ceil(e.target.value))} />
+                    <input className="input-field" name="deleteSkinId" type="number" step="1" placeholder="Skin ID" onChange={(e) => setSkinIdDelete(Math.ceil(e.target.value))} value={skinIdDelete} />
                     <button className="button" onClick={handleDeleteSkin}>Delete Skin</button>
                 </div>
             </div>
 
             <h2>Filter skins</h2>
-
             <div className="form">
                 <div className="form-group">
                     <button onClick={() => setIsFilterModalOpen(!isFilterModalOpen)}>Toggle Filters</button>
                     <button onClick={handleClearResults}>Clear Results</button>
+                    <button onClick={handleClearFilters}>Clear Filter</button>
                 </div>
                 {isFilterModalOpen && (
                     <div>
-                        <input className="input-field" name="skinId" type="number" placeholder="Skin ID" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="name" placeholder="Name" onChange={handleFilterParamsChange} />
-                        <select className="input-field" name="rarity" onChange={handleFilterParamsChange}>
+                        <input className="input-field" name="skinId" type="number" placeholder="Skin ID" onChange={handleFilterParamsChange} value={filterParams.skinId || ''} />
+                        <input className="input-field" name="name" placeholder="Name" onChange={handleFilterParamsChange} value={filterParams.name|| ''} />
+                        <select className="input-field" name="rarity" onChange={handleFilterParamsChange} value={filterParams.rarity || ''}>
                             <option value="">Select rarity</option>
                             <option value="Common">Common</option>
                             <option value="Uncommon">Uncommon</option>
@@ -339,14 +360,14 @@ const SkinController = () => {
                             <option value="Ancient">Ancient</option>
                             <option value="Immortal">Immortal</option>
                         </select>
-                        <input className="input-field" name="exterior" placeholder="Exterior" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="price" placeholder="Price" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="paintSeed" type="number" placeholder="Paint Seed" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="float" placeholder="Float" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="weaponId" type="number" placeholder="Weapon ID" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="weaponName" placeholder="Weapon Name" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="csgoCaseId" type="number" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} />
-                        <input className="input-field" name="csgoCaseName" placeholder="CSGO Case Name" onChange={handleFilterParamsChange} />
+                        <input className="input-field" name="exterior" placeholder="Exterior" onChange={handleFilterParamsChange} value={filterParams.exterior|| ''} />
+                        <input className="input-field" name="price" placeholder="Price" onChange={handleFilterParamsChange} value={filterParams.price|| ''} />
+                        <input className="input-field" name="paintSeed" type="number" placeholder="Paint Seed" onChange={handleFilterParamsChange} value={filterParams.paintSeed|| ''} />
+                        <input className="input-field" name="float" placeholder="Float" onChange={handleFilterParamsChange} value={filterParams.float|| ''} />
+                        <input className="input-field" name="weaponId" type="number" placeholder="Weapon ID" onChange={handleFilterParamsChange} value={filterParams.weaponId|| ''} />
+                        <input className="input-field" name="weaponName" placeholder="Weapon Name" onChange={handleFilterParamsChange} value={filterParams.weaponName|| ''} />
+                        <input className="input-field" name="csgoCaseId" type="number" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} value={filterParams.csgoCaseId|| ''} />
+                        <input className="input-field" name="csgoCaseName" placeholder="CSGO Case Name" onChange={handleFilterParamsChange} value={filterParams.csgoCaseName|| ''} />
                         <button className="button" onClick={handleFilterSkins}>Filter Skins</button>
                     </div>
                 )}
@@ -391,8 +412,8 @@ const SkinController = () => {
             <h2>Update skin price</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="updateSkinIdPrice" type="number" step="1" placeholder="Skin ID" onChange={(e) => setSkinId(Math.ceil(e.target.value))} />
-                    <input className="input-field" placeholder="New Price" onChange={(e) => setNewPrice(e.target.value)} />
+                    <input className="input-field" name="updateSkinIdPrice" type="number" step="1" placeholder="Skin ID" onChange={(e) => setSkinIdUpdatePrice(Math.ceil(e.target.value))} value={skinIdUpdatePrice} />
+                    <input className="input-field" placeholder="New Price" onChange={(e) => setNewPrice(e.target.value)} value={newPrice} />
                     <button className="button" onClick={handleUpdateSkinPrice}>Update Price</button>
                 </div>
             </div>
@@ -400,8 +421,8 @@ const SkinController = () => {
             <h2>Update Skin Drops From</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="updateDropsFromIdSkin" type="number" placeholder="Skin ID" onChange={(e) => setSkinId(Math.ceil(e.target.value))} />
-                    <input className="input-field" name="updateDropsFromIdCase" type="number" placeholder="Case ID" onChange={(e) => setCaseId(Math.ceil(e.target.value))} />
+                    <input className="input-field" name="updateDropsFromIdSkin" type="number" placeholder="Skin ID" onChange={(e) => setSkinIdDropsFrom(Math.ceil(e.target.value))} value={skinIdDropsFrom} />
+                    <input className="input-field" name="updateDropsFromIdCase" type="number" placeholder="Case ID" onChange={(e) => setCaseIdDropsFrom(Math.ceil(e.target.value))} value={caseIdDropsFrom} />
                     <button onClick={handleUpdateSkinDropsFrom}>Update</button>
                 </div>
             </div>
