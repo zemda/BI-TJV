@@ -3,12 +3,13 @@ import axios from 'axios';
 import './Controller.css';
 
 const CsgoCaseController = () => {
-    const [cases, setCases] = useState([]);
+    const [cases, setCases] = useState('');
     const [newCase, setNewCase] = useState({});
-    const [deleteCaseId, setDeleteCaseId] = useState(null);
-    const [caseId, setCaseId] = useState(null);
-    const [newPrice, setNewPrice] = useState(null);
-    const [addSkins, setAddSkins] = useState(false);
+    const [deleteCaseId, setDeleteCaseId] = useState('');
+    const [changeCaseId, setChangeCaseId] = useState('');
+    const [addOrRemCaseId, setAddOrRemCaseId] = useState('');
+    const [newPrice, setNewPrice] = useState('');
+    const [addSkins, setAddSkins] = useState(true);
     const [skinIdInput, setSkinIdInput] = useState('');
 
     const [showCases, setShowCases] = useState(false);
@@ -44,6 +45,7 @@ const CsgoCaseController = () => {
             .then(response => {
                 console.log(response.data);
                 getCases();
+                setNewCase({})
             })
             .catch(error => {
                 console.error('Error creating case: ', error);
@@ -57,6 +59,7 @@ const CsgoCaseController = () => {
             .then(response => {
                 console.log(response.data);
                 getCases();
+                setDeleteCaseId('');
             })
             .catch(error => {
                 console.error('Error deleting case: ', error);
@@ -70,6 +73,8 @@ const CsgoCaseController = () => {
             .then(response => {
                 console.log(response.data);
                 getCases();
+                setChangeCaseId('');
+                setNewPrice('');
             })
             .catch(error => {
                 console.error('Error changing case price: ', error);
@@ -87,6 +92,9 @@ const CsgoCaseController = () => {
             .then(response => {
                 console.log(response.data);
                 getCases();
+                setAddOrRemCaseId('');
+                setSkinIdInput('');
+                setAddSkins(true);
             })
             .catch(error => {
                 console.error('Error adding or removing skins to case: ', error);
@@ -128,7 +136,7 @@ const CsgoCaseController = () => {
     };
 
     const handleChangeCasePrice = () => {
-        if (!caseId) {
+        if (!changeCaseId) {
             setErrorMessage('Case ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
             return; 
@@ -140,11 +148,11 @@ const CsgoCaseController = () => {
             return;
         }
 
-        changeCasePrice(caseId, newPrice);
+        changeCasePrice(changeCaseId, newPrice);
     }
 
     const handleAddOrRemoveSkinsToCase = () => {
-        if (!caseId) {
+        if (!addOrRemCaseId) {
             setErrorMessage('Case ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
             return; 
@@ -156,7 +164,7 @@ const CsgoCaseController = () => {
             return;
         }
         const skinIds = skinIdInput.split(',').map(Number);
-        addOrRemoveSkinsToCase(caseId, skinIds, addSkins);
+        addOrRemoveSkinsToCase(addOrRemCaseId, skinIds, addSkins);
     }
 
     return (
@@ -206,8 +214,8 @@ const CsgoCaseController = () => {
             <h2>Create a new case</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="name" placeholder="Name" onChange={handleNewCaseChange} />
-                    <input className="input-field" name="price" placeholder="Price" onChange={handleNewCaseChange} />
+                    <input className="input-field" name="name" placeholder="Name" onChange={handleNewCaseChange} value={newCase.name || ''} />
+                    <input className="input-field" name="price" placeholder="Price" onChange={handleNewCaseChange} value={newCase.price || ''} />
                     <button className="button" onClick={handleCreateCase}>Create Case</button>
                 </div>
             </div>
@@ -215,7 +223,7 @@ const CsgoCaseController = () => {
             <h2>Delete a case</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="deleteCaseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setDeleteCaseId(Math.ceil(e.target.value))} />
+                    <input className="input-field" name="deleteCaseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setDeleteCaseId(Math.ceil(e.target.value))} value={deleteCaseId} />
                     <button className="button" onClick={handleDeleteCase}>Delete Case</button>
                 </div>
             </div>
@@ -223,8 +231,8 @@ const CsgoCaseController = () => {
             <h2>Change Case Price</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="caseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setCaseId(Math.ceil(e.target.value))} />
-                    <input className="input-field" name="newPrice" type="number" step="0.01" placeholder="New Price" onChange={(e) => setNewPrice(parseFloat(e.target.value))} />
+                    <input className="input-field" name="caseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setChangeCaseId(Math.ceil(e.target.value))} value={changeCaseId} />
+                    <input className="input-field" name="newPrice" type="number" step="0.01" placeholder="New Price" onChange={(e) => setNewPrice(parseFloat(e.target.value))} value={newPrice} />
                     <button className="button" onClick={handleChangeCasePrice}>Change Price</button>
                 </div>
             </div>
@@ -232,10 +240,10 @@ const CsgoCaseController = () => {
             <h2>Add/Remove Skins to Case</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" name="caseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setCaseId(Math.ceil(e.target.value))} />
-                    <input className="input-field" name="skinIds" placeholder="Skin IDs (comma separated)" onChange={(e) => setSkinIdInput(e.target.value)} />
+                    <input className="input-field" name="caseId" type="number" step="1" placeholder="Case ID" onChange={(e) => setAddOrRemCaseId(Math.ceil(e.target.value))} value={addOrRemCaseId} />
+                    <input className="input-field" name="skinIds" placeholder="Skin IDs (comma separated)" onChange={(e) => setSkinIdInput(e.target.value)} value={skinIdInput} />
                     <div className="checkbox-container">
-                        <input className="input-field" name="addSkins" type="checkbox" onChange={(e) => setAddSkins(e.target.checked)} />
+                        <input className="input-field" name="addSkins" type="checkbox" onChange={(e) => setAddSkins(e.target.checked)} checked={addSkins} />
                     </div>
                     <button className="button" onClick={handleAddOrRemoveSkinsToCase}>Add/Remove Skins</button>
                 </div>

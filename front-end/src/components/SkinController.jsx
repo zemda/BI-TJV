@@ -3,7 +3,7 @@ import axios from 'axios';
 import './Controller.css';
 
 const SkinController = () => {
-    const [skins, setSkins] = useState([]);
+    const [skins, setSkins] = useState('');
     const [newSkin, setNewSkin] = useState({});
 
     const [skinIdDelete, setSkinIdDelete] = useState('');

@@ -35,7 +35,7 @@ const customStyles = {
 };
 
 const WeaponController = () => {
-    const [weapons, setWeapons] = useState([]);
+    const [weapons, setWeapons] = useState('');
     const [skins, setSkins] = useState([]);
     const [selectedSkin, setSelectedSkin] = useState(null);
     const [newWeapon, setNewWeapon] = useState({});
