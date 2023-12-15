@@ -11,7 +11,7 @@ const SkinController = () => {
     const [skinIdDropsFrom, setSkinIdDropsFrom] = useState('');
     const [caseIdDropsFrom, setCaseIdDropsFrom] = useState('');
     const [caseIdCreateSkin, setCaseIdCreateSkin] = useState('');
-    
+
     const [newPrice, setNewPrice] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [filterSkins, setFilterSkins] = useState([]);
@@ -99,7 +99,7 @@ const SkinController = () => {
                 getSkins();
                 setSkinIdDropsFrom('');
                 setCaseIdDropsFrom('');
-                
+
             })
             .catch(error => {
                 console.error('Error updating skin drops from: ', error);
@@ -349,7 +349,7 @@ const SkinController = () => {
                 {isFilterModalOpen && (
                     <div>
                         <input className="input-field" name="skinId" type="number" placeholder="Skin ID" onChange={handleFilterParamsChange} value={filterParams.skinId || ''} />
-                        <input className="input-field" name="name" placeholder="Name" onChange={handleFilterParamsChange} value={filterParams.name|| ''} />
+                        <input className="input-field" name="name" placeholder="Name" onChange={handleFilterParamsChange} value={filterParams.name || ''} />
                         <select className="input-field" name="rarity" onChange={handleFilterParamsChange} value={filterParams.rarity || ''}>
                             <option value="">Select rarity</option>
                             <option value="Common">Common</option>
@@ -360,14 +360,14 @@ const SkinController = () => {
                             <option value="Ancient">Ancient</option>
                             <option value="Immortal">Immortal</option>
                         </select>
-                        <input className="input-field" name="exterior" placeholder="Exterior" onChange={handleFilterParamsChange} value={filterParams.exterior|| ''} />
-                        <input className="input-field" name="price" placeholder="Price" onChange={handleFilterParamsChange} value={filterParams.price|| ''} />
-                        <input className="input-field" name="paintSeed" type="number" placeholder="Paint Seed" onChange={handleFilterParamsChange} value={filterParams.paintSeed|| ''} />
-                        <input className="input-field" name="float" placeholder="Float" onChange={handleFilterParamsChange} value={filterParams.float|| ''} />
-                        <input className="input-field" name="weaponId" type="number" placeholder="Weapon ID" onChange={handleFilterParamsChange} value={filterParams.weaponId|| ''} />
-                        <input className="input-field" name="weaponName" placeholder="Weapon Name" onChange={handleFilterParamsChange} value={filterParams.weaponName|| ''} />
-                        <input className="input-field" name="csgoCaseId" type="number" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} value={filterParams.csgoCaseId|| ''} />
-                        <input className="input-field" name="csgoCaseName" placeholder="CSGO Case Name" onChange={handleFilterParamsChange} value={filterParams.csgoCaseName|| ''} />
+                        <input className="input-field" name="exterior" placeholder="Exterior" onChange={handleFilterParamsChange} value={filterParams.exterior || ''} />
+                        <input className="input-field" name="price" placeholder="Price" onChange={handleFilterParamsChange} value={filterParams.price || ''} />
+                        <input className="input-field" name="paintSeed" type="number" placeholder="Paint Seed" onChange={handleFilterParamsChange} value={filterParams.paintSeed || ''} />
+                        <input className="input-field" name="float" placeholder="Float" onChange={handleFilterParamsChange} value={filterParams.float || ''} />
+                        <input className="input-field" name="weaponId" type="number" placeholder="Weapon ID" onChange={handleFilterParamsChange} value={filterParams.weaponId || ''} />
+                        <input className="input-field" name="weaponName" placeholder="Weapon Name" onChange={handleFilterParamsChange} value={filterParams.weaponName || ''} />
+                        <input className="input-field" name="csgoCaseId" type="number" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} value={filterParams.csgoCaseId || ''} />
+                        <input className="input-field" name="csgoCaseName" placeholder="CSGO Case Name" onChange={handleFilterParamsChange} value={filterParams.csgoCaseName || ''} />
                         <button className="button" onClick={handleFilterSkins}>Filter Skins</button>
                     </div>
                 )}

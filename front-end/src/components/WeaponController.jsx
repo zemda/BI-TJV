@@ -85,6 +85,8 @@ const WeaponController = () => {
                 getWeapons();
                 getSkinsWithNoWeapon();
                 setSelectedSkin(null)
+                setNewWeapon({});
+                setSelectedSkin(null);
             })
             .catch(error => {
                 console.error('Error creating weapon: ', error);
@@ -102,6 +104,8 @@ const WeaponController = () => {
             .then(response => {
                 console.log(response.data);
                 getWeapons();
+                setUpdateTagWeaponId('');
+                setNewTag('');
             })
             .catch(error => {
                 console.error('Error updating weapon\'s tag: ', error);
@@ -116,6 +120,7 @@ const WeaponController = () => {
                 console.log(response.data);
                 getWeapons();
                 getSkinsWithNoWeapon();
+                setDeleteWeaponId('');
             })
             .catch(error => {
                 console.error('Error deleting weapon: ', error);
@@ -239,9 +244,9 @@ const WeaponController = () => {
             <h2>Create a new weapon</h2>
             <div className="form">
                 <div className="form-group">
-                    <input className="input-field" type="text" name="name" placeholder="Weapon name" onChange={handleNewWeaponChange} />
-                    <input className="input-field" type="text" name="type" placeholder="Weapon type" onChange={handleNewWeaponChange} />
-                    <input className="input-field" type="text" name="tag" placeholder="Weapon tag (optional)" onChange={handleNewWeaponChange} />
+                    <input className="input-field" type="text" name="name" placeholder="Weapon name" onChange={handleNewWeaponChange} value={newWeapon.name || ''} />
+                    <input className="input-field" type="text" name="type" placeholder="Weapon type" onChange={handleNewWeaponChange} value={newWeapon.type || ''} />
+                    <input className="input-field" type="text" name="tag" placeholder="Weapon tag (optional)" onChange={handleNewWeaponChange} value={newWeapon.tag || ''} />
                 </div>
                 <div className="form-group">
                     <Select className="select-field" styles={customStyles} options={skins} value={selectedSkin} onChange={setSelectedSkin} />
