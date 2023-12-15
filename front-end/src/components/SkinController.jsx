@@ -33,8 +33,6 @@ const SkinController = () => {
     const paginateFilter = (pageNumber) => setCurrentFilterPage(pageNumber);
 
 
-
-
     useEffect(() => {
         getSkins();
     }, []);
@@ -173,7 +171,7 @@ const SkinController = () => {
         if (!skinId) {
             setErrorMessage('Skin ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
-            return; 
+            return;
         }
 
         if (!newPrice || isNaN(newPrice) || newPrice < 0) {
@@ -281,7 +279,6 @@ const SkinController = () => {
                     <p>Loading skins...</p>
                 )}
 
-                {/* Pages */}
                 <div>
                     {[...Array(Math.ceil(skins.length / skinsPerPage)).keys()].map(number => (
                         <button key={number} onClick={() => paginateShowSkins(number + 1)}>
@@ -367,7 +364,7 @@ const SkinController = () => {
                             </tr>
                         </thead>
                         <tbody>
-                        {filterSkins.slice((currentFilterPage - 1) * filteredSkinsPerPage, currentFilterPage * filteredSkinsPerPage).map(skin => (
+                            {filterSkins.slice((currentFilterPage - 1) * filteredSkinsPerPage, currentFilterPage * filteredSkinsPerPage).map(skin => (
                                 <tr key={skin.id}>
                                     <td>{skin.id}</td>
                                     <td>{skin.name}</td>
@@ -382,9 +379,9 @@ const SkinController = () => {
                     </table>
                 )}
                 <div>
-                    {Array(Math.ceil(filterSkins.length / filteredSkinsPerPage)).fill().map((_, i) => (
-                        <button key={i} onClick={() => paginateFilter(i + 1)}>
-                            {i + 1}
+                    {[...Array(Math.ceil(filterSkins.length / filteredSkinsPerPage)).keys()].map(number => (
+                        <button key={number} onClick={() => paginateFilter(number + 1)}>
+                            {number + 1}
                         </button>
                     ))}
                 </div>
