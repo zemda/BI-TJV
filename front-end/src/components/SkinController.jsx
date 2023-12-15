@@ -10,7 +10,7 @@ const SkinController = () => {
     const [newPrice, setNewPrice] = useState(null);
     const [deleteSkinId, setDeleteSkinId] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const [valuableSkins, setValuableSkins] = useState([]);
+    const [filterSkins, setFilterSkins] = useState([]);
     const [filterParams, setFilterParams] = useState({});
 
     const [showSkins, setShowSkins] = useState(false);
@@ -23,7 +23,17 @@ const SkinController = () => {
 
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const paginateShowSkins = (pageNumber) => setCurrentPage(pageNumber);
+
+    const [currentFilterPage, setCurrentFilterPage] = useState(1);
+    const [filteredSkinsPerPage,] = useState(5);
+    const indexOfLastFilterSkin = currentFilterPage * filteredSkinsPerPage;
+    const indexOfFirstFilterSkin = indexOfLastFilterSkin - filteredSkinsPerPage;
+    const currentFilterSkins = filterSkins.slice(indexOfFirstFilterSkin, indexOfLastFilterSkin);
+    const paginateFilter = (pageNumber) => setCurrentFilterPage(pageNumber);
+
+
+
 
     useEffect(() => {
         getSkins();
@@ -103,7 +113,7 @@ const SkinController = () => {
             });
     };
 
-    const filterSkins = (filter) => {
+    const getFilterSkins = (filter) => {
         const filterCopy = { ...filter };
 
         for (let key in filterCopy) {
@@ -114,7 +124,7 @@ const SkinController = () => {
 
         axios.get('http://localhost:8080/skins/filter', { params: filterCopy })
             .then(response => {
-                setValuableSkins(response.data);
+                setFilterSkins(response.data);
             });
     };
 
@@ -197,7 +207,7 @@ const SkinController = () => {
     };
 
     const handleClearResults = () => {
-        setValuableSkins([]);
+        setFilterSkins([]);
     };
 
     const handleFilterSkins = () => {
@@ -225,7 +235,7 @@ const SkinController = () => {
             return;
         }
 
-        filterSkins(filterParams);
+        getFilterSkins(filterParams);
     };
 
     return (
@@ -274,7 +284,7 @@ const SkinController = () => {
                 {/* Pages */}
                 <div>
                     {[...Array(Math.ceil(skins.length / skinsPerPage)).keys()].map(number => (
-                        <button key={number} onClick={() => paginate(number + 1)}>
+                        <button key={number} onClick={() => paginateShowSkins(number + 1)}>
                             {number + 1}
                         </button>
                     ))}
@@ -343,7 +353,7 @@ const SkinController = () => {
                         <button className="button" onClick={handleFilterSkins}>Filter Skins</button>
                     </div>
                 )}
-                {valuableSkins.length > 0 && (
+                {currentFilterSkins.length > 0 && (
                     <table className="table">
                         <thead>
                             <tr>
@@ -357,7 +367,7 @@ const SkinController = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {valuableSkins.map(skin => (
+                        {filterSkins.slice((currentFilterPage - 1) * filteredSkinsPerPage, currentFilterPage * filteredSkinsPerPage).map(skin => (
                                 <tr key={skin.id}>
                                     <td>{skin.id}</td>
                                     <td>{skin.name}</td>
@@ -371,6 +381,13 @@ const SkinController = () => {
                         </tbody>
                     </table>
                 )}
+                <div>
+                    {Array(Math.ceil(filterSkins.length / filteredSkinsPerPage)).fill().map((_, i) => (
+                        <button key={i} onClick={() => paginateFilter(i + 1)}>
+                            {i + 1}
+                        </button>
+                    ))}
+                </div>
             </div>
 
 
