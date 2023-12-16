@@ -51,7 +51,7 @@ class WeaponServiceTest {
         `when`(skinRepo.findById(1L)).thenReturn(Optional.of(newSkin))
         `when`(weaponRepo.save(any())).thenReturn(weapon)
 
-        val createdWeapon = weaponService.createWeapon(weapon, 1L)
+        val createdWeapon = weaponService.create(weapon, 1L)
 
         verify(weaponRepo, times(1)).save(weapon)
         verify(skinRepo, times(1)).save(newSkin)
@@ -68,7 +68,7 @@ class WeaponServiceTest {
         `when`(skinRepo.findById(1L)).thenReturn(Optional.of(assignedSkin))
 
         assertThrows<Exception> {
-            weaponService.createWeapon(weapon, 1L)
+            weaponService.create(weapon, 1L)
         }
 
         verify(weaponRepo, never()).save(weapon)
