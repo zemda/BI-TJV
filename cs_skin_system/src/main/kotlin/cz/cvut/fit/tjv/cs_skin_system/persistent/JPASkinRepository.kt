@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface JPASkinRepository : JpaRepository<Skin, Long>, JpaSpecificationExecutor<Skin> {
-    fun existsByNameAndPaintSeedAndFloatAndWeaponId(name: String, paintSeed: Int, float: Double, weaponId: Long): Boolean
+    fun existsByNameAndPaintSeedAndFloatAndWeaponName(name: String, paintSeed: Int, float: Double, weaponName: String): Boolean
 
     @Query("SELECT s FROM Skin s JOIN s.dropsFrom c WHERE s.rarity = :rarity AND s.price > :price AND c.name = :caseName")
     fun findByRarityAndPriceAndCsgoCase(@Param("rarity") rarity: String, @Param("price") price: Double, @Param("caseName") caseName: String): List<Skin>

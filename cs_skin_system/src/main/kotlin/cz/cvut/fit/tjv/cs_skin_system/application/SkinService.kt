@@ -52,13 +52,13 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
      * @return The created Skin entity.
      */
     override fun create(entity: Skin, opt: Long?): Skin {
-        val weaponId = entity.weapon?.id
-        if (weaponId != null && skinRepository
-            .existsByNameAndPaintSeedAndFloatAndWeaponId(
+        val weaponName = entity.weapon?.name
+        if (weaponName != null && skinRepository
+            .existsByNameAndPaintSeedAndFloatAndWeaponName(
                 entity.name,
                 entity.paintSeed,
                 entity.float,
-                weaponId)
+                weaponName)
             ) {
             throw IllegalArgumentException("Skin already exists.")
         }
