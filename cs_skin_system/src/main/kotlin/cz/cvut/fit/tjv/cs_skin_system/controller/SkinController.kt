@@ -1,7 +1,8 @@
 package cz.cvut.fit.tjv.cs_skin_system.controller
 
 import cz.cvut.fit.tjv.cs_skin_system.application.SkinService
-import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
+import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
+import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,14 +28,14 @@ class SkinController (val skinService: SkinService){
 
     @GetMapping
     @Operation(summary = "Fetch all skins")
-    fun getSkins(): ResponseEntity<List<Skin>> {
+    fun getSkins(): ResponseEntity<List<SkinDTO>> {
         val skins = skinService.getAll()
         return ResponseEntity.ok(skins)
     }
 
     @PostMapping
     @Operation(summary = "Create and optionally assign it a case")
-    fun createSkin(@RequestBody skin: Skin, @RequestParam(required = false) caseId: Long?): ResponseEntity<Any> {
+    fun createSkin(@RequestBody skin: SkinCreateDTO, @RequestParam(required = false) caseId: Long?): ResponseEntity<Any> {
         return try {
             val createdSkin = skinService.create(skin, caseId)
             ResponseEntity(createdSkin, HttpStatus.CREATED)
@@ -92,7 +93,7 @@ class SkinController (val skinService: SkinService){
 
     @GetMapping("/noWeapon")
     @Operation(summary = "Fetch skins that we can apply to a weapon")
-    fun getSkinsWithNoWeapon(): ResponseEntity<List<Skin>> {
+    fun getSkinsWithNoWeapon(): ResponseEntity<List<SkinDTO>> {
         val skins = skinService.getSkinsWithNoWeapon()
         return ResponseEntity.ok(skins)
     }
@@ -109,7 +110,7 @@ class SkinController (val skinService: SkinService){
                     @RequestParam(required = false) weaponId: Long?,
                     @RequestParam(required = false) weaponName: String?,
                     @RequestParam(required = false) csgoCaseId: Long?,
-                    @RequestParam(required = false) csgoCaseName: String?):  ResponseEntity<List<Skin>> {
+                    @RequestParam(required = false) csgoCaseName: String?):  ResponseEntity<List<SkinDTO>> {
 
         val result = skinService.filterSkins(skinId, name, rarity, exterior, price, paintSeed, float, weaponId, weaponName, csgoCaseId, csgoCaseName)
         return ResponseEntity.ok(result)

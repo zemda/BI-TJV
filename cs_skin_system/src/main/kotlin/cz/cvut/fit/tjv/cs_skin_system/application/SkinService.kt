@@ -3,6 +3,8 @@ package cz.cvut.fit.tjv.cs_skin_system.application
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
+import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
+import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -19,19 +21,22 @@ import kotlin.math.min
 @Transactional
 class SkinService (@Autowired var skinRepository: JPASkinRepository,
                    @Autowired var caseRepo : JPACsgoCaseRepository,
-                  ) : SkinServiceInterface, CrudServiceInterface<Skin, Long> {
+                   @Autowired var weaponService: WeaponService
+                  ) : SkinServiceInterface, CrudServiceInterface<Skin, Long, SkinDTO, SkinCreateDTO> {
 
-    override fun getById(id: Long): Skin {
-        return skinRepository.findById(id).orElseThrow {
-                NoSuchElementException("No skin with id $id")
+    override fun getById(id: Long): SkinDTO {
+        val entity = skinRepository.findById(id).orElseThrow {
+            NoSuchElementException("No skin with id $id")
         }
+        return toDTO(entity)
     }
 
-    override fun getAll(): List<Skin> {
-        return skinRepository.findAll()
+    override fun getAll(): List<SkinDTO> {
+        val entities = skinRepository.findAll()
+        return entities.map { toDTO(it) }
     }
 
-    override fun updateSkinPrice(skinId: Long, newPrice: Double): Skin {
+    override fun updateSkinPrice(skinId: Long, newPrice: Double): SkinDTO {
         val skin = skinRepository.findById(skinId)
             .orElseThrow { NoSuchElementException("No skin with id $skinId") }
 
@@ -39,30 +44,20 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
             throw IllegalArgumentException("Invalid newPrice $newPrice.")
         }
         skin.price = newPrice
-
-        return skinRepository.save(skin)
+        val savedEntity = skinRepository.save(skin)
+        return toDTO(savedEntity)
     }
 
     /**
      * Creates a new Skin entity and saves it to the database.
      * If a caseId is provided, the method also adds a relation between the Skin and the Case.
      *
-     * @param entity The Skin entity to be created.
+     * @param dto The Skin dto to be created.
      * @param opt The ID of the Case. This parameter is optional.
      * @return The created Skin entity.
      */
-    override fun create(entity: Skin, opt: Long?): Skin {
-        val weaponName = entity.weapon?.name
-        if (weaponName != null && skinRepository
-            .existsByNameAndPaintSeedAndFloatAndWeaponName(
-                entity.name,
-                entity.paintSeed,
-                entity.float,
-                weaponName)
-            ) {
-            throw IllegalArgumentException("Skin already exists.")
-        }
-
+    override fun create(dto: SkinCreateDTO, opt: Long?): SkinDTO {
+        val entity = toEntity(dto)
         entity.exterior = when {
             entity.float <= 0.07 -> "Factory New"
             entity.float <= 0.15 -> "Minimal Wear"
@@ -82,10 +77,11 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
             csgoCase.contains.add(entity)
             caseRepo.save(csgoCase)
         }
-        return skinRepository.save(entity)
+        val savedEntity = skinRepository.save(entity)
+        return toDTO(savedEntity)
     }
 
-    override fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : Skin {
+    override fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : SkinDTO {
         val skin = skinRepository.findById(skinId)
             .orElseThrow { NoSuchElementException("No skin with id $skinId") }
 
@@ -96,8 +92,8 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
             csgoCase.contains.add(skin)
             caseRepo.save(csgoCase)
         }
-    
-        return skinRepository.save(skin)
+        val savedEntity = skinRepository.save(skin)
+        return toDTO(savedEntity)
     }
 
     override fun deleteById(id: Long){
@@ -118,7 +114,7 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
 
     override fun filterSkins(skinId: Long?, name: String?, rarity: String?, exterior: String?,
                     price: Double?, paintSeed: Int?, float: Double?,
-                    weaponId: Long?, weaponName: String?, csgoCaseId: Long?, csgoCaseName: String?): List<Skin> {
+                    weaponId: Long?, weaponName: String?, csgoCaseId: Long?, csgoCaseName: String?): List<SkinDTO> {
         if (listOf(skinId, name, rarity, exterior, price, paintSeed,
                 float, weaponId, weaponName, csgoCaseId, csgoCaseName).all { it == null }) {
             return listOf()
@@ -153,11 +149,44 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
                 cb.equal(cases.get<String>("name"), it)
             }
         }
-
-        return skinRepository.findAll(spec)
+        val entities = skinRepository.findAll(spec)
+        return entities.map { toDTO(it) }
     }
 
-    override fun getSkinsWithNoWeapon(): List<Skin> {
-        return skinRepository.findByWeaponIsNull()
+    override fun getSkinsWithNoWeapon(): List<SkinDTO> {
+        val entities = skinRepository.findByWeaponIsNull()
+        return entities.map { toDTO(it) }
+    }
+
+    override fun toDTO(entity: Skin): SkinDTO {
+        return SkinDTO(
+            id = entity.id,
+            name = entity.name,
+            rarity = entity.rarity,
+            exterior = entity.exterior,
+            price = entity.price,
+            paintSeed = entity.paintSeed,
+            float = entity.float,
+            weapon = entity.weapon?.let { weaponService.toDTO(it) }
+        )
+    }
+
+    override fun toEntity(dto: SkinCreateDTO): Skin {
+        val skin = Skin().apply {
+            name = dto.name
+            rarity = dto.rarity
+            price = dto.price
+            paintSeed = dto.paintSeed
+            float = dto.float
+            weapon = dto.weapon
+        }
+
+        dto.dropsFrom?.let { caseIds ->
+            skin.dropsFrom = caseIds.map { id ->
+                caseRepo.findById(id).orElseThrow { NoSuchElementException("No csgo case with id $id") }
+            }.toMutableSet()
+        }
+
+        return skin
     }
 }

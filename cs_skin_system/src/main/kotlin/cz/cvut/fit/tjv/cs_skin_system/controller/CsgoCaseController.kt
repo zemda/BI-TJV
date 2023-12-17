@@ -1,7 +1,8 @@
 package cz.cvut.fit.tjv.cs_skin_system.controller
 
 import cz.cvut.fit.tjv.cs_skin_system.application.CsgoCaseService
-import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
+import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseCreateDTO
+import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,13 +27,13 @@ class CsgoCaseController(private val csgoCaseService: CsgoCaseService) {
     }
 
     @GetMapping
-    fun getCsgoCases(): ResponseEntity<List<CsgoCase>> {
+    fun getCsgoCases(): ResponseEntity<List<CsgoCaseDTO>> {
         return ResponseEntity.ok(csgoCaseService.getAll())
     }
 
     @PostMapping
     @Operation(summary = "Create a CSGO case")
-    fun createCsgoCase(@RequestBody csgoCase: CsgoCase): ResponseEntity<Any> {
+    fun createCsgoCase(@RequestBody csgoCase: CsgoCaseCreateDTO): ResponseEntity<Any> {
         return try {
             val createdCsgoCase = csgoCaseService.create(csgoCase)
             ResponseEntity(createdCsgoCase, HttpStatus.CREATED)

@@ -1,7 +1,8 @@
 package cz.cvut.fit.tjv.cs_skin_system.controller
 
 import cz.cvut.fit.tjv.cs_skin_system.application.WeaponService
-import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
+import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponCreateDTO
+import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponDTO
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,14 +28,14 @@ class WeaponController (val weaponService: WeaponService){
 
     @GetMapping
     @Operation(summary = "Fetch all skins")
-    fun getWeapons(): ResponseEntity<List<Weapon>> {
+    fun getWeapons(): ResponseEntity<List<WeaponDTO>> {
         val weapons = weaponService.getAll()
         return ResponseEntity.ok(weapons)
     }
 
     @PostMapping
     @Operation(summary = "Create a weapon")
-    fun createWeapon(@RequestBody weapon: Weapon, @RequestParam skinId: Long): ResponseEntity<Any> {
+    fun createWeapon(@RequestBody weapon: WeaponCreateDTO, @RequestParam skinId: Long): ResponseEntity<Any> {
         return try {
             val createdWeapon = weaponService.create(weapon, skinId)
             ResponseEntity(createdWeapon, HttpStatus.CREATED)

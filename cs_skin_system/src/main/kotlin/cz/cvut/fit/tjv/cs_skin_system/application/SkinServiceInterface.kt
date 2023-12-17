@@ -1,18 +1,18 @@
 package cz.cvut.fit.tjv.cs_skin_system.application
 
-import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
+import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 
 interface SkinServiceInterface {
 
-    fun updateSkinPrice(skinId: Long, newPrice: Double) : Skin
+    fun updateSkinPrice(skinId: Long, newPrice: Double) : SkinDTO
 
-    fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : Skin
+    fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>) : SkinDTO
 
 
     fun filterSkins(skinId: Long?, name: String?, rarity: String?, exterior: String?,
                     price: Double?, paintSeed: Int?, float: Double?,
                     weaponId: Long?, weaponName: String?, csgoCaseId: Long?, csgoCaseName: String?):
-            List<Skin>
+            List<SkinDTO>
 
-    fun getSkinsWithNoWeapon(): List<Skin>
+    fun getSkinsWithNoWeapon(): List<SkinDTO>
 }
