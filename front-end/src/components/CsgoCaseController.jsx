@@ -5,6 +5,7 @@ import './Controller.css';
 const CsgoCaseController = () => {
     const [cases, setCases] = useState('');
     const [newCase, setNewCase] = useState({});
+    const [createSkinIdInput, setCreateSkinIdInput] = useState('');
     const [deleteCaseId, setDeleteCaseId] = useState('');
     const [changeCaseId, setChangeCaseId] = useState('');
     const [addOrRemCaseId, setAddOrRemCaseId] = useState('');
@@ -40,12 +41,14 @@ const CsgoCaseController = () => {
             });
     };
 
-    const createCase = (csgoCase) => {
-        axios.post('http://localhost:8080/csgoCase', csgoCase)
+    const createCase = (csgoCase, skinIds) => {
+        const caseWithSkins = { ...csgoCase, contains: skinIds };
+        axios.post('http://localhost:8080/csgoCase', caseWithSkins)
             .then(response => {
                 console.log(response.data);
                 getCases();
                 setNewCase({})
+                setCreateSkinIdInput('');
             })
             .catch(error => {
                 console.error('Error creating case: ', error);
@@ -123,7 +126,22 @@ const CsgoCaseController = () => {
             return;
         }
 
-        createCase(newCase);
+        const trimmedInput = createSkinIdInput.trim().replace(/,$/, '');
+        if (!trimmedInput) {
+            setErrorMessage('You must enter at least one skin ID.');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
+        const regex = /^(\d+(,\d+)*)?$/;
+        if (!regex.test(createSkinIdInput)) {
+            setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+        const skinIds = createSkinIdInput.split(',').map(Number);
+
+        createCase(newCase, skinIds);
     };
 
     const handleDeleteCase = () => {
@@ -157,6 +175,14 @@ const CsgoCaseController = () => {
             setTimeout(() => setErrorMessage(null), 5000);
             return; 
         }
+
+        const trimmedInput = skinIdInput.trim().replace(/,$/, '');
+        if (!trimmedInput) {
+            setErrorMessage('You must enter at least one skin ID.');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+
         const regex = /^(\d+(,\d+)*)?$/;
         if (!regex.test(skinIdInput)) {
             setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
@@ -216,6 +242,7 @@ const CsgoCaseController = () => {
                 <div className="form-group">
                     <input className="input-field" name="name" placeholder="Name" onChange={handleNewCaseChange} value={newCase.name || ''} />
                     <input className="input-field" name="price" placeholder="Price" onChange={handleNewCaseChange} value={newCase.price || ''} />
+                    <input className="input-field" name="skinIds" placeholder="Skin IDs (comma separated)" onChange={(e) => setCreateSkinIdInput(e.target.value)} value={createSkinIdInput} />
                     <button className="button" onClick={handleCreateCase}>Create Case</button>
                 </div>
             </div>
