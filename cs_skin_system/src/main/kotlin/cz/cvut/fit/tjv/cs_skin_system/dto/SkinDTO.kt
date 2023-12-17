@@ -13,5 +13,5 @@ data class SkinDTO(
     @field:NotNull @field:DecimalMin("0.0") var price: Double,
     @field:NotNull @field:Min(0) val paintSeed: Int,
     @field:NotNull @field:DecimalMin("0.0") val float: Double,
-    val weapon: WeaponDTO?
+    var weapon: WeaponDTO?
 )

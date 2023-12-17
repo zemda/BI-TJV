@@ -172,21 +172,18 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
     }
 
     override fun toEntity(dto: SkinCreateDTO): Skin {
-        val skin = Skin().apply {
+        val drops = dto.dropsFrom?.map { id ->
+            caseRepo.findById(id).orElseThrow { NoSuchElementException("No csgo case with id $id") }
+        }?.toMutableSet() ?: emptySet<CsgoCase>().toMutableSet()
+
+        return Skin().apply {
             name = dto.name
             rarity = dto.rarity
             price = dto.price
             paintSeed = dto.paintSeed
             float = dto.float
             weapon = dto.weapon
+            dropsFrom = drops
         }
-
-        dto.dropsFrom?.let { caseIds ->
-            skin.dropsFrom = caseIds.map { id ->
-                caseRepo.findById(id).orElseThrow { NoSuchElementException("No csgo case with id $id") }
-            }.toMutableSet()
-        }
-
-        return skin
     }
 }

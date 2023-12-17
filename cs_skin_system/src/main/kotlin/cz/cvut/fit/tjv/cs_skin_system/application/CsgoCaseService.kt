@@ -1,6 +1,7 @@
 package cz.cvut.fit.tjv.cs_skin_system.application
 
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
+import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
@@ -28,12 +29,20 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
     }
 
     override fun create(dto: CsgoCaseCreateDTO, opt: Long?): CsgoCaseDTO {
+        if (dto.contains.isNullOrEmpty()) {
+            throw IllegalArgumentException("Case must contain at least one skin.")
+        }
         val entity = toEntity(dto)
         if (caseRepo.existsByName(entity.name)) {
             throw IllegalArgumentException("Case with name ${entity.name} already exists.")
         }
 
         val savedEntity = caseRepo.save(entity)
+        for (skin in entity.contains) {
+            skin.dropsFrom.add(savedEntity)
+            skinRepo.save(skin)
+        }
+
         return toDTO(savedEntity)
     }
 
@@ -89,11 +98,14 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
     }
 
     override fun toEntity(dto: CsgoCaseCreateDTO): CsgoCase {
-        val skins = dto.contains?.let { skinRepo.findAllById(it).toSet() } ?: emptySet()
+        val skins = dto.contains?.map { id ->
+            skinRepo.findById(id).orElseThrow { NoSuchElementException("No skin with id $id") }
+        }?.toMutableSet() ?: emptySet<Skin?>().toMutableSet()
+
         return CsgoCase().apply {
             name = dto.name
             price = dto.price
-            contains = skins.toMutableSet()
+            contains = skins
         }
     }
 }
