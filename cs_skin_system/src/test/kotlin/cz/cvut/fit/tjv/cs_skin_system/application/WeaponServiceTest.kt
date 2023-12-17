@@ -2,6 +2,8 @@ import cz.cvut.fit.tjv.cs_skin_system.persistent.JPAWeaponRepository
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.application.WeaponService
+import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
+import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -46,31 +48,36 @@ class WeaponServiceTest {
     @Test
     fun `createWeapon assigns skin successfully`() {
         val newSkin = Skin().apply { id = 1L; weapon = null }
+        val newSkinDTO = SkinDTO(id = newSkin.id, name = newSkin.name,
+            rarity = newSkin.rarity, exterior = newSkin.exterior, price = newSkin.price,
+            paintSeed = newSkin.paintSeed, float = newSkin.float, weapon = null
+        )
         val weapon = Weapon().apply { id = 2L; skin = null }
+        val weaponCreateDTO = WeaponCreateDTO(name = "Test Weapon", type = "Rifle", tag = "Test Tag", skin = 1L)
 
         `when`(skinRepo.findById(1L)).thenReturn(Optional.of(newSkin))
         `when`(weaponRepo.save(any())).thenReturn(weapon)
+        `when`(skinRepo.save(any())).thenReturn(newSkin)
 
-        val createdWeapon = weaponService.create(weapon, 1L)
+        val createdWeapon = weaponService.create(weaponCreateDTO, 1L)
 
-        verify(weaponRepo, times(1)).save(weapon)
+        verify(weaponRepo, times(1)).save(any())
         verify(skinRepo, times(1)).save(newSkin)
 
-        assertEquals(newSkin, createdWeapon.skin)
+        assertEquals(newSkinDTO, createdWeapon.skin)
     }
 
     @Test
     fun `createWeapon throws exception when skin is already assigned to another weapon`() {
         val otherWeapon = Weapon().apply { id = 3L; }
         val assignedSkin = Skin().apply { id = 1L; weapon = otherWeapon }
-        val weapon = Weapon().apply { id = 2L; skin = null}
-
+        val weaponCreateDTO = WeaponCreateDTO(name = "Test Weapon", type = "Rifle", tag = "Test Tag", skin = 1L)
         `when`(skinRepo.findById(1L)).thenReturn(Optional.of(assignedSkin))
 
         assertThrows<Exception> {
-            weaponService.create(weapon, 1L)
+            weaponService.create(weaponCreateDTO, 1L)
         }
 
-        verify(weaponRepo, never()).save(weapon)
+        verify(weaponRepo, never()).save(any())
     }
 }

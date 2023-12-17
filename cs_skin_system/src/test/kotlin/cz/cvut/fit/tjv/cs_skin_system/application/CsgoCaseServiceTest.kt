@@ -80,7 +80,11 @@ class CsgoCaseServiceTest {
 
         verify(caseRepo, times(1)).findById(1L)
         verify(caseRepo, times(1)).save(any(CsgoCase::class.java))
-        assert(updatedCase.contains.containsAll(listOf(skin1, skin2, skin3)))
+
+        val csgoCase = caseRepo.findById(updatedCase.id).orElseThrow {
+            NoSuchElementException("No csgo case with id 1")
+        }
+        assert(csgoCase.contains.containsAll(listOf(skin1, skin2, skin3)))
 
         reset(caseRepo)
     }
@@ -109,7 +113,11 @@ class CsgoCaseServiceTest {
 
         verify(caseRepo, times(1)).findById(1L)
         verify(caseRepo, times(1)).save(any(CsgoCase::class.java))
-        assert(updatedCase.contains.isEmpty())
+
+        val csgoCase = caseRepo.findById(updatedCase.id).orElseThrow {
+            NoSuchElementException("No csgo case with id 1")
+        }
+        assert(csgoCase.contains.isEmpty())
 
         reset(caseRepo)
     }

@@ -59,6 +59,11 @@ class WeaponService (var weaponRepo : JPAWeaponRepository,
         skin.weapon = createdEntity
         skinRepo.save(skin)
 
+        val refreshedSkin = skinRepo.findById(skin.id).orElseThrow {
+            NoSuchElementException("Failed to refresh skin from db.")
+        }
+        createdEntity.skin = refreshedSkin
+
         return toDTO(createdEntity)
     }
 
@@ -80,8 +85,7 @@ class WeaponService (var weaponRepo : JPAWeaponRepository,
     }
 
     override fun toDTO(entity: Weapon): WeaponDTO {
-        val skinEntity = entity.skin?.let { skinRepo.findById(it.id).orElse(null) }
-        val skinDTO = skinEntity?.let {
+        val skinDTO = entity.skin?.let {
             SkinDTO(
                 id = it.id,
                 name = it.name,

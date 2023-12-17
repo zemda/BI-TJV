@@ -1,4 +1,5 @@
 import cz.cvut.fit.tjv.cs_skin_system.application.SkinService
+import cz.cvut.fit.tjv.cs_skin_system.application.WeaponService
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
@@ -23,6 +24,9 @@ class SkinServiceTest {
 
     @Mock
     lateinit var csgoCaseRepo: JPACsgoCaseRepository
+
+    @Mock
+    lateinit var weaponService: WeaponService
 
 
     @Test
