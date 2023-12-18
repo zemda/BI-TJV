@@ -126,21 +126,21 @@ const CsgoCaseController = () => {
             return;
         }
 
-        const trimmedInput = createSkinIdInput.trim().replace(/,$/, '');
+        const trimmedInput = createSkinIdInput.replace(/\s/g, '').replace(/,$/, '');
         if (!trimmedInput) {
             setErrorMessage('You must enter at least one skin ID.');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
 
-        const regex = /^(\d+(,\d+)*)?$/;
-        if (!regex.test(createSkinIdInput)) {
+        const regex = /^(\d+,)*\d+$/;
+        if (!regex.test(trimmedInput)) {
             setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-        const skinIds = createSkinIdInput.split(',').map(Number);
 
+        const skinIds = trimmedInput.split(/\s*,\s*/).map(Number);
         createCase(newCase, skinIds);
     };
 
@@ -176,20 +176,20 @@ const CsgoCaseController = () => {
             return; 
         }
 
-        const trimmedInput = skinIdInput.trim().replace(/,$/, '');
+        const trimmedInput = skinIdInput.replace(/\s/g, '').replace(/,$/, '');
         if (!trimmedInput) {
             setErrorMessage('You must enter at least one skin ID.');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
 
-        const regex = /^(\d+(,\d+)*)?$/;
-        if (!regex.test(skinIdInput)) {
+        const regex = /^(\d+,)*\d+$/;
+        if (!regex.test(trimmedInput)) {
             setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-        const skinIds = skinIdInput.split(',').map(Number);
+        const skinIds = trimmedInput.split(/\s*,\s*/).map(Number);
         addOrRemoveSkinsToCase(addOrRemCaseId, skinIds, addSkins);
     }
 

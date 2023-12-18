@@ -182,11 +182,6 @@ const SkinController = () => {
                 return;
             }
             caseIds = trimmedInput.split(/\s*,\s*/).map(Number);
-            if (caseIds.some(isNaN)) {
-                setErrorMessage('All case IDs must be numbers.');
-                setTimeout(() => setErrorMessage(null), 5000);
-                return;
-            }
         }
 
         createSkin(newSkin, caseIds);
@@ -225,11 +220,6 @@ const SkinController = () => {
                 return;
             }
             caseIds = trimmedInput.split(/\s*,\s*/).map(Number);
-            if (caseIds.some(isNaN)) {
-                setErrorMessage('All case IDs must be numbers.');
-                setTimeout(() => setErrorMessage(null), 5000);
-                return;
-            }
         }else {
             setErrorMessage('You must enter at least one ID');
             setTimeout(() => setErrorMessage(null), 5000);
