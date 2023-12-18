@@ -10,7 +10,7 @@ const SkinController = () => {
     const [skinIdUpdatePrice, setSkinIdUpdatePrice] = useState('');
     const [skinIdDropsFrom, setSkinIdDropsFrom] = useState('');
     const [caseIdDropsFrom, setCaseIdDropsFrom] = useState('');
-    const [caseIdCreateSkin, setCaseIdCreateSkin] = useState('');
+    const [caseIdsCreateSkin, setCaseIdsCreateSkin] = useState('');
 
     const [newPrice, setNewPrice] = useState('');
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -53,17 +53,14 @@ const SkinController = () => {
             });
     };
 
-    const createSkin = (skin, caseId) => {
-        axios.post('http://localhost:8080/skins', skin, {
-            params: {
-                caseId: caseId
-            }
-        })
+    const createSkin = (skin, caseIds) => {
+        const skinWithCases = { ...skin, dropsFrom: caseIds };
+        axios.post('http://localhost:8080/skins', skinWithCases)
             .then(response => {
                 console.log(response.data);
                 getSkins();
                 setNewSkin({});
-                setCaseIdCreateSkin('');
+                setCaseIdsCreateSkin('');
             })
             .catch(error => {
                 console.error('Error creating skin: ', error);
@@ -175,7 +172,15 @@ const SkinController = () => {
             return;
         }
 
-        createSkin(newSkin, caseIdCreateSkin);
+        const regex = /^(\d+(,\d+)*)?$/;
+        if (!regex.test(caseIdsCreateSkin)) {
+            setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
+            setTimeout(() => setErrorMessage(null), 5000);
+            return;
+        }
+        const caseIds = caseIdsCreateSkin.split(',').map(Number);
+
+        createSkin(newSkin, caseIds);
     };
 
     const handleUpdateSkinPrice = () => {
@@ -326,7 +331,7 @@ const SkinController = () => {
                     <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} value={newSkin.price || ''} />
                     <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} value={newSkin.paintSeed || ''} />
                     <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} value={newSkin.float || ''} />
-                    <input className="input-field" name="caseid" type="number" min="0" placeholder="Case ID (optional)" onChange={(e) => setCaseIdCreateSkin(e.target.value)} value={caseIdCreateSkin} />
+                    <input className="input-field" name="caseid" min="0" placeholder="Case IDs (optional, comma separated)" onChange={(e) => setCaseIdsCreateSkin(e.target.value)} value={caseIdsCreateSkin} />
                     <button className="button" onClick={handleCreateSkin}>Create Skin</button>
                 </div>
             </div>

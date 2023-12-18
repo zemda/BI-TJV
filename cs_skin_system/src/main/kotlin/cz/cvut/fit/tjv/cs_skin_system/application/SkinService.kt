@@ -48,14 +48,6 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
         return toDTO(savedEntity)
     }
 
-    /**
-     * Creates a new Skin entity and saves it to the database.
-     * If a caseId is provided, the method also adds a relation between the Skin and the Case.
-     *
-     * @param dto The Skin dto to be created.
-     * @param opt The ID of the Case. This parameter is optional.
-     * @return The created Skin entity.
-     */
     override fun create(dto: SkinCreateDTO, opt: Long?): SkinDTO {
         val entity = toEntity(dto)
         entity.exterior = when {
@@ -70,14 +62,12 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
         }
         entity.paintSeed = min(entity.paintSeed, 1000)
 
-        if (opt != null) {
-            val csgoCase = caseRepo.findById(opt)
-                .orElseThrow { NoSuchElementException("No csgo case with id $opt") }
-            entity.dropsFrom.add(csgoCase)
-            csgoCase.contains.add(entity)
-            caseRepo.save(csgoCase)
-        }
         val savedEntity = skinRepository.save(entity)
+        for (case in entity.dropsFrom){
+            case.contains.add(savedEntity)
+            caseRepo.save(case)
+        }
+
         return toDTO(savedEntity)
     }
 
