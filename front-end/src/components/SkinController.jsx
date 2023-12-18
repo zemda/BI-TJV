@@ -172,13 +172,22 @@ const SkinController = () => {
             return;
         }
 
-        const regex = /^(\d+(,\d+)*)?$/;
-        if (!regex.test(caseIdsCreateSkin)) {
-            setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
-            setTimeout(() => setErrorMessage(null), 5000);
-            return;
+        const trimmedInput = caseIdsCreateSkin.trim().replace(/,$/, '');
+        let caseIds = null;
+        if (trimmedInput !== '') {
+            const regex = /^(\d+\s*,\s*\d+)*$/;
+            if (!regex.test(trimmedInput)) {
+                setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
+                setTimeout(() => setErrorMessage(null), 5000);
+                return;
+            }
+            caseIds = trimmedInput.split(/\s*,\s*/).map(Number);
+            if (caseIds.some(isNaN)) {
+                setErrorMessage('All case IDs must be numbers.');
+                setTimeout(() => setErrorMessage(null), 5000);
+                return;
+            }
         }
-        const caseIds = caseIdsCreateSkin.split(',').map(Number);
 
         createSkin(newSkin, caseIds);
     };
@@ -331,7 +340,7 @@ const SkinController = () => {
                     <input className="input-field" name="price" placeholder="Price" onChange={handleNewSkinChange} value={newSkin.price || ''} />
                     <input className="input-field" name="paintSeed" type="number" step="1" placeholder="Paint Seed" onChange={handleNewSkinChange} value={newSkin.paintSeed || ''} />
                     <input className="input-field" name="float" placeholder="Float" onChange={handleNewSkinChange} value={newSkin.float || ''} />
-                    <input className="input-field" name="caseid" min="0" placeholder="Case IDs (optional, comma separated)" onChange={(e) => setCaseIdsCreateSkin(e.target.value)} value={caseIdsCreateSkin} />
+                    <input className="input-field" name="caseid" placeholder="Case IDs (optional, comma separated)" onChange={(e) => setCaseIdsCreateSkin(e.target.value)} value={caseIdsCreateSkin} />
                     <button className="button" onClick={handleCreateSkin}>Create Skin</button>
                 </div>
             </div>
