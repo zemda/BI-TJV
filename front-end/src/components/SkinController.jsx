@@ -89,8 +89,8 @@ const SkinController = () => {
             });
     };
 
-    const updateSkinDropsFrom = (skinId, caseId) => {
-        axios.put(`http://localhost:8080/skins/${skinId}/cases`, [caseId])
+    const updateSkinDropsFrom = (skinId, casesIds) => {
+        axios.put(`http://localhost:8080/skins/${skinId}/cases`, casesIds)
             .then(response => {
                 console.log(response.data);
                 getSkins();
@@ -172,10 +172,10 @@ const SkinController = () => {
             return;
         }
 
-        const trimmedInput = caseIdsCreateSkin.trim().replace(/,$/, '');
+        const trimmedInput = caseIdsCreateSkin.replace(/\s/g, '').replace(/,$/, '');
         let caseIds = null;
         if (trimmedInput !== '') {
-            const regex = /^(\d+\s*,\s*\d+)*$/;
+            const regex = /^(\d+,)*\d+$/;
             if (!regex.test(trimmedInput)) {
                 setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
                 setTimeout(() => setErrorMessage(null), 5000);
@@ -215,13 +215,28 @@ const SkinController = () => {
             return;
         }
 
-        if (!caseIdDropsFrom) {
-            setErrorMessage('Case ID must be provided');
+        const trimmedInput = caseIdDropsFrom.replace(/\s/g, '').replace(/,$/, '');
+        let caseIds = null;
+        if (trimmedInput !== '') {
+            const regex = /^(\d+,)*\d+$/;
+            if (!regex.test(trimmedInput)) {
+                setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
+                setTimeout(() => setErrorMessage(null), 5000);
+                return;
+            }
+            caseIds = trimmedInput.split(/\s*,\s*/).map(Number);
+            if (caseIds.some(isNaN)) {
+                setErrorMessage('All case IDs must be numbers.');
+                setTimeout(() => setErrorMessage(null), 5000);
+                return;
+            }
+        }else {
+            setErrorMessage('You must enter at least one ID');
             setTimeout(() => setErrorMessage(null), 5000);
             return;
         }
-
-        updateSkinDropsFrom(skinIdDropsFrom, caseIdDropsFrom);
+        
+        updateSkinDropsFrom(skinIdDropsFrom, caseIds);
     };
 
     const handleDeleteSkin = () => {
@@ -436,7 +451,7 @@ const SkinController = () => {
             <div className="form">
                 <div className="form-group">
                     <input className="input-field" name="updateDropsFromIdSkin" type="number" placeholder="Skin ID" onChange={(e) => setSkinIdDropsFrom(Math.ceil(e.target.value))} value={skinIdDropsFrom} />
-                    <input className="input-field" name="updateDropsFromIdCase" type="number" placeholder="Case ID" onChange={(e) => setCaseIdDropsFrom(Math.ceil(e.target.value))} value={caseIdDropsFrom} />
+                    <input className="input-field" name="updateDropsFromIdCase" placeholder="Case IDs (comma separated)" onChange={(e) => setCaseIdDropsFrom(e.target.value)} value={caseIdDropsFrom} />
                     <button onClick={handleUpdateSkinDropsFrom}>Update</button>
                 </div>
             </div>
