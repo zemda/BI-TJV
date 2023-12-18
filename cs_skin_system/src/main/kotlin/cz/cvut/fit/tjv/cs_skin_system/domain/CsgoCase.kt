@@ -14,11 +14,9 @@ class CsgoCase {
     @Column(name = "id_case")
     var id: Long = 0
 
-    @Column(name = "name_case", unique = true)
-    var name: String = ""
+    @Column(name = "name_case", unique = true) var name: String = ""
 
-    @DecimalMin("0.0")
-    var price: Double = 0.0
+    @DecimalMin("0.0") var price: Double = 0.0
 
     @ManyToMany(targetEntity = Skin::class, mappedBy = "dropsFrom")
     var contains: MutableSet<Skin> = mutableSetOf()

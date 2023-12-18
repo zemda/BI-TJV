@@ -11,32 +11,37 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 
 @DataJpaTest
-class JPASkinRepositoryTest @Autowired constructor(
-    private val entityManager: TestEntityManager,
-    private val skinRepository: JPASkinRepository
+class JPASkinRepositoryTest
+@Autowired
+constructor(
+        private val entityManager: TestEntityManager,
+        private val skinRepository: JPASkinRepository
 ) {
     @Test
     fun `Skin query test`() {
 
-        val myWeapon = Weapon().apply {
-            name = "AK-47"
-            type = "rifle"
-            tag = "My AK-47"
-        }
+        val myWeapon =
+                Weapon().apply {
+                    name = "AK-47"
+                    type = "rifle"
+                    tag = "My AK-47"
+                }
 
-        val mySkin = Skin().apply {
-            name = "Fire Beast"
-            rarity = "covert"
-            exterior = "Field-Tested"
-            price = 250.0
-            paintSeed = 123
-            float = .255
-        }
+        val mySkin =
+                Skin().apply {
+                    name = "Fire Beast"
+                    rarity = "covert"
+                    exterior = "Field-Tested"
+                    price = 250.0
+                    paintSeed = 123
+                    float = .255
+                }
 
-        val myCase = CsgoCase().apply {
-            name = "Danger Zone"
-            price = 50.0
-        }
+        val myCase =
+                CsgoCase().apply {
+                    name = "Danger Zone"
+                    price = 50.0
+                }
 
         mySkin.weapon = myWeapon
         mySkin.dropsFrom.add(myCase)
@@ -48,7 +53,12 @@ class JPASkinRepositoryTest @Autowired constructor(
         entityManager.persist(mySkin)
         entityManager.flush()
 
-        val skinsFromRepo = skinRepository.findByRarityAndPriceAndCsgoCase(mySkin.rarity, mySkin.price - 0.01, myCase.name)
+        val skinsFromRepo =
+                skinRepository.findByRarityAndPriceAndCsgoCase(
+                        mySkin.rarity,
+                        mySkin.price - 0.01,
+                        myCase.name
+                )
         Assertions.assertEquals(1, skinsFromRepo.size)
         val skinFromRepo = skinsFromRepo[0]
 
@@ -61,6 +71,5 @@ class JPASkinRepositoryTest @Autowired constructor(
 
         assertThat(skinFromRepo.weapon).isEqualTo(mySkin.weapon)
         assertThat(skinFromRepo.dropsFrom).isEqualTo(mySkin.dropsFrom)
-
     }
 }

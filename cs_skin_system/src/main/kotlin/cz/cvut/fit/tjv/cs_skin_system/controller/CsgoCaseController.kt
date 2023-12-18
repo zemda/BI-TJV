@@ -46,7 +46,10 @@ class CsgoCaseController(private val csgoCaseService: CsgoCaseService) {
 
     @PutMapping("/{caseId}/changePrice/{newPrice}")
     @Operation(summary = "Change price of a CSGO case")
-    fun changePrice(@PathVariable caseId: Long, @PathVariable newPrice: Double): ResponseEntity<Any> {
+    fun changePrice(
+            @PathVariable caseId: Long,
+            @PathVariable newPrice: Double
+    ): ResponseEntity<Any> {
         return try {
             val updatedCsgoCase = csgoCaseService.updateCsgoCase(caseId, newPrice)
             ResponseEntity(updatedCsgoCase, HttpStatus.OK)
@@ -61,15 +64,20 @@ class CsgoCaseController(private val csgoCaseService: CsgoCaseService) {
 
     @PutMapping("/{caseId}/addSkins")
     @Operation(summary = "Add skins to a CSGO case")
-    fun addSkinsToCase(@PathVariable caseId: Long, @RequestBody skinIds: List<Long>,
-                       @RequestParam addSkins: Boolean): ResponseEntity<Any> {
+    fun addSkinsToCase(
+            @PathVariable caseId: Long,
+            @RequestBody skinIds: List<Long>,
+            @RequestParam addSkins: Boolean
+    ): ResponseEntity<Any> {
         return try {
             val updatedCsgoCase = csgoCaseService.updateCsgoCase(caseId, skinIds, addSkins)
             ResponseEntity(updatedCsgoCase, HttpStatus.OK)
         } catch (e: NoSuchElementException) {
             when {
-                e.message?.contains("case") ?: false -> ResponseEntity(e.message ?: "CSGO Case not found", HttpStatus.NOT_FOUND)
-                e.message?.contains("skin") ?: false -> ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
+                e.message?.contains("case") ?: false ->
+                        ResponseEntity(e.message ?: "CSGO Case not found", HttpStatus.NOT_FOUND)
+                e.message?.contains("skin") ?: false ->
+                        ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
                 else -> ResponseEntity(e.message ?: "Item not found", HttpStatus.NOT_FOUND)
             }
         } catch (e: IllegalArgumentException) {

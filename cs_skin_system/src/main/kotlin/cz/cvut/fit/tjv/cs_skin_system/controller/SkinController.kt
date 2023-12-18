@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/skins")
 @CrossOrigin(origins = ["http://localhost:5173"])
-class SkinController (val skinService: SkinService){
+class SkinController(val skinService: SkinService) {
 
     @GetMapping("/{id}")
     @Operation(summary = "Fetch a skin by its id")
@@ -50,7 +50,10 @@ class SkinController (val skinService: SkinService){
 
     @PutMapping("/{id}/price")
     @Operation(summary = "Update price to a skin with given id")
-    fun updateSkinPrice(@PathVariable id: Long, @RequestParam newPrice: Double): ResponseEntity<Any> {
+    fun updateSkinPrice(
+            @PathVariable id: Long,
+            @RequestParam newPrice: Double
+    ): ResponseEntity<Any> {
         return try {
             val updatedSkin = skinService.updateSkinPrice(id, newPrice)
             ResponseEntity(updatedSkin, HttpStatus.OK)
@@ -65,7 +68,10 @@ class SkinController (val skinService: SkinService){
 
     @PutMapping("/{id}/cases")
     @Operation(summary = "Update from which cases can skin drop")
-    fun updateSkinDropsFrom(@PathVariable id: Long, @RequestBody caseIds: List<Long>): ResponseEntity<Any> {
+    fun updateSkinDropsFrom(
+            @PathVariable id: Long,
+            @RequestBody caseIds: List<Long>
+    ): ResponseEntity<Any> {
         return try {
             val updatedSkin = skinService.updateSkinDropsFrom(id, caseIds)
             ResponseEntity(updatedSkin, HttpStatus.OK)
@@ -85,7 +91,10 @@ class SkinController (val skinService: SkinService){
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
         } catch (e: IllegalStateException) {
-            ResponseEntity(e.message ?: "Skin is on a weapon, delete that first", HttpStatus.CONFLICT)
+            ResponseEntity(
+                    e.message ?: "Skin is on a weapon, delete that first",
+                    HttpStatus.CONFLICT
+            )
         } catch (e: Exception) {
             ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -100,20 +109,34 @@ class SkinController (val skinService: SkinService){
 
     @GetMapping("/filter")
     @Operation(summary = "Fetch skins that meet the parameters")
-    fun filterSkins(@RequestParam(required = false) skinId: Long?,
-                    @RequestParam(required = false) name: String?,
-                    @RequestParam(required = false) rarity: String?,
-                    @RequestParam(required = false) exterior: String?,
-                    @RequestParam(required = false) price: Double?,
-                    @RequestParam(required = false) paintSeed: Int?,
-                    @RequestParam(required = false) float: Double?,
-                    @RequestParam(required = false) weaponId: Long?,
-                    @RequestParam(required = false) weaponName: String?,
-                    @RequestParam(required = false) csgoCaseId: Long?,
-                    @RequestParam(required = false) csgoCaseName: String?):  ResponseEntity<List<SkinDTO>> {
+    fun filterSkins(
+            @RequestParam(required = false) skinId: Long?,
+            @RequestParam(required = false) name: String?,
+            @RequestParam(required = false) rarity: String?,
+            @RequestParam(required = false) exterior: String?,
+            @RequestParam(required = false) price: Double?,
+            @RequestParam(required = false) paintSeed: Int?,
+            @RequestParam(required = false) float: Double?,
+            @RequestParam(required = false) weaponId: Long?,
+            @RequestParam(required = false) weaponName: String?,
+            @RequestParam(required = false) csgoCaseId: Long?,
+            @RequestParam(required = false) csgoCaseName: String?
+    ): ResponseEntity<List<SkinDTO>> {
 
-        val result = skinService.filterSkins(skinId, name, rarity, exterior, price, paintSeed, float, weaponId, weaponName, csgoCaseId, csgoCaseName)
+        val result =
+                skinService.filterSkins(
+                        skinId,
+                        name,
+                        rarity,
+                        exterior,
+                        price,
+                        paintSeed,
+                        float,
+                        weaponId,
+                        weaponName,
+                        csgoCaseId,
+                        csgoCaseName
+                )
         return ResponseEntity.ok(result)
     }
-
 }

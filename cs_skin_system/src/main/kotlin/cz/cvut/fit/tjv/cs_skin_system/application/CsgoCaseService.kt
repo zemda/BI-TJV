@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service
 
 @Service
 @Transactional
-class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
-                       @Autowired var skinRepo : JPASkinRepository
-                      ) : CsgoCaseServiceInterface, CrudServiceInterface<CsgoCase, Long, CsgoCaseDTO, CsgoCaseCreateDTO> {
+class CsgoCaseService(
+        @Autowired var caseRepo: JPACsgoCaseRepository,
+        @Autowired var skinRepo: JPASkinRepository
+) : CsgoCaseServiceInterface, CrudServiceInterface<CsgoCase, Long, CsgoCaseDTO, CsgoCaseCreateDTO> {
 
     override fun getById(id: Long): CsgoCaseDTO {
-        val entity = caseRepo.findById(id).orElseThrow {
-            NoSuchElementException("No case with id $id")
-        }
+        val entity =
+                caseRepo.findById(id).orElseThrow { NoSuchElementException("No case with id $id") }
         return toDTO(entity)
     }
 
@@ -47,8 +47,8 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
     }
 
     override fun deleteById(id: Long) {
-        val case = caseRepo.findById(id).
-            orElseThrow{ NoSuchElementException("No case with id $id") }
+        val case =
+                caseRepo.findById(id).orElseThrow { NoSuchElementException("No case with id $id") }
 
         for (skin in case.contains) {
             skin.dropsFrom.remove(case)
@@ -59,10 +59,12 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
     }
 
     override fun updateCsgoCase(caseId: Long, newPrice: Double): CsgoCaseDTO {
-        val case = caseRepo.findById(caseId)
-            .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
+        val case =
+                caseRepo.findById(caseId).orElseThrow {
+                    NoSuchElementException("No csgo case with id $caseId")
+                }
 
-        if (newPrice < 0 ){
+        if (newPrice < 0) {
             throw IllegalArgumentException("Invalid newPrice $newPrice.")
         }
         case.price = newPrice
@@ -71,20 +73,28 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
     }
 
     override fun updateCsgoCase(caseId: Long, skinIds: List<Long>, addSkins: Boolean): CsgoCaseDTO {
-        val csgoCase = caseRepo.findById(caseId)
-            .orElseThrow { NoSuchElementException("No csgo case with id $caseId") }
+        val csgoCase =
+                caseRepo.findById(caseId).orElseThrow {
+                    NoSuchElementException("No csgo case with id $caseId")
+                }
 
         skinIds.forEach { skinId ->
-            val skin = skinRepo.findById(skinId)
-                .orElseThrow { NoSuchElementException("No skin with id $skinId") }
+            val skin =
+                    skinRepo.findById(skinId).orElseThrow {
+                        NoSuchElementException("No skin with id $skinId")
+                    }
 
             if (addSkins) {
                 if (!csgoCase.contains.add(skin) || !skin.dropsFrom.add(csgoCase)) {
-                    throw IllegalStateException("Skin with id $skinId is already in the case with id $caseId")
+                    throw IllegalStateException(
+                            "Skin with id $skinId is already in the case with id $caseId"
+                    )
                 }
             } else {
                 if (!csgoCase.contains.remove(skin) || !skin.dropsFrom.remove(csgoCase)) {
-                    throw IllegalStateException("No skin with id $skinId found in the case with id $caseId")
+                    throw IllegalStateException(
+                            "No skin with id $skinId found in the case with id $caseId"
+                    )
                 }
             }
             skinRepo.save(skin)
@@ -98,9 +108,15 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
     }
 
     override fun toEntity(dto: CsgoCaseCreateDTO): CsgoCase {
-        val skins = dto.contains?.map { id ->
-            skinRepo.findById(id).orElseThrow { NoSuchElementException("No skin with id $id") }
-        }?.toMutableSet() ?: emptySet<Skin?>().toMutableSet()
+        val skins =
+                dto.contains
+                        ?.map { id ->
+                            skinRepo.findById(id).orElseThrow {
+                                NoSuchElementException("No skin with id $id")
+                            }
+                        }
+                        ?.toMutableSet()
+                        ?: emptySet<Skin?>().toMutableSet()
 
         return CsgoCase().apply {
             name = dto.name

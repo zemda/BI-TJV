@@ -16,32 +16,17 @@ class Skin {
     @Column(name = "id_skin")
     var id: Long = 0
 
-    @Column(name = "name_skin")
-    @NotBlank
-    var name: String = ""
+    @Column(name = "name_skin") @NotBlank var name: String = ""
 
-    @Column(name = "rarity")
-    @NotBlank
-    var rarity: String = ""
+    @Column(name = "rarity") @NotBlank var rarity: String = ""
 
-    @Column(name = "exterior")
-    @NotBlank
-    var exterior: String = ""
+    @Column(name = "exterior") @NotBlank var exterior: String = ""
 
-    @Column(name = "price")
-    @NotNull
-    @DecimalMin("0.0")
-    var price: Double = 0.0
+    @Column(name = "price") @NotNull @DecimalMin("0.0") var price: Double = 0.0
 
-    @Column(name = "paint_seed")
-    @NotNull
-    @Min(0)
-    var paintSeed: Int = 0
+    @Column(name = "paint_seed") @NotNull @Min(0) var paintSeed: Int = 0
 
-    @Column(name = "float")
-    @NotNull
-    @DecimalMin("0.0")
-    var float: Double = 0.0
+    @Column(name = "float") @NotNull @DecimalMin("0.0") var float: Double = 0.0
 
     @OneToOne(mappedBy = "skin", cascade = [CascadeType.PERSIST])
     @JsonBackReference
@@ -49,18 +34,11 @@ class Skin {
 
     @ManyToMany(targetEntity = CsgoCase::class)
     @JoinTable(
-        name = "skin_csgo_case",
-        joinColumns = [JoinColumn(name = "id_skin")],
-        inverseJoinColumns = [JoinColumn(name = "id_case")]
+            name = "skin_csgo_case",
+            joinColumns = [JoinColumn(name = "id_skin")],
+            inverseJoinColumns = [JoinColumn(name = "id_case")]
     )
-    @JsonIgnore
     var dropsFrom: MutableSet<CsgoCase> = mutableSetOf()
-
-    @JsonProperty("dropsFrom")
-    fun ignoreDropsFrom(dropsFrom: Set<CsgoCase>) {
-        this.dropsFrom.clear()
-        this.dropsFrom.addAll(dropsFrom)
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

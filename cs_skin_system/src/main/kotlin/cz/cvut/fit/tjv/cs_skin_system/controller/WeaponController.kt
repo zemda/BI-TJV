@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/weapons")
 @CrossOrigin(origins = ["http://localhost:5173"])
-class WeaponController (val weaponService: WeaponService){
+class WeaponController(val weaponService: WeaponService) {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a weapon by its id")
