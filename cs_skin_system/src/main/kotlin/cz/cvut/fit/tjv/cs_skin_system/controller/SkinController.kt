@@ -35,9 +35,9 @@ class SkinController (val skinService: SkinService){
 
     @PostMapping
     @Operation(summary = "Create and optionally assign it a case")
-    fun createSkin(@RequestBody skin: SkinCreateDTO, @RequestParam(required = false) caseId: Long?): ResponseEntity<Any> {
+    fun createSkin(@RequestBody skin: SkinCreateDTO): ResponseEntity<Any> {
         return try {
-            val createdSkin = skinService.create(skin, caseId)
+            val createdSkin = skinService.create(skin)
             ResponseEntity(createdSkin, HttpStatus.CREATED)
         } catch (e: IllegalArgumentException) {
             ResponseEntity(e.message ?: "Skin already exists.", HttpStatus.BAD_REQUEST)

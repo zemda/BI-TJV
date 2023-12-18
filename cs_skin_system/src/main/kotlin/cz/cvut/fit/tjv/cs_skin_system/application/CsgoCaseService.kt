@@ -28,7 +28,7 @@ class CsgoCaseService (@Autowired var caseRepo : JPACsgoCaseRepository,
         return entities.map { toDTO(it) }
     }
 
-    override fun create(dto: CsgoCaseCreateDTO, opt: Long?): CsgoCaseDTO {
+    override fun create(dto: CsgoCaseCreateDTO): CsgoCaseDTO {
         if (dto.contains.isNullOrEmpty()) {
             throw IllegalArgumentException("Case must contain at least one skin.")
         }

@@ -75,11 +75,8 @@ const WeaponController = () => {
     };
 
     const createWeapon = () => {
-        axios.post('http://localhost:8080/weapons', newWeapon, {
-            params: {
-                skinId: selectedSkin ? selectedSkin.value : null
-            }
-        })
+        const weaponWithSkin = { ...newWeapon, skin: selectedSkin.value };
+        axios.post('http://localhost:8080/weapons', weaponWithSkin)
             .then(response => {
                 console.log(response.data);
                 getWeapons();

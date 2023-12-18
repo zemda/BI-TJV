@@ -30,24 +30,15 @@ class WeaponService (var weaponRepo : JPAWeaponRepository,
         return entities.map { toDTO(it) }
     }
 
-    /**
-     * Creates a new Weapon entity and saves it to the database.
-     * SkinId must be provided, the method adds virtual relation between the Weapon and Skin
-     *
-     * @param dto The Weapon dto to be created.
-     * @param opt The ID of the skin with which is weapon painted, this parameter is not optional here
-     * @return The created Weapon entity.
-     */
-    override fun create(dto: WeaponCreateDTO, opt: Long?): WeaponDTO {
-        if (opt == null) {
-            throw IllegalArgumentException("A skinId must be provided.")
-        }
-        val skin = skinRepo.findById(opt).orElseThrow {
+    override fun create(dto: WeaponCreateDTO): WeaponDTO {
+        val skin = skinRepo.findById(dto.skin).orElseThrow {
             NoSuchElementException("Invalid skinId.")
         }
+
         if (skin.weapon != null){
             throw IllegalStateException("This skin is already on a weapon.")
         }
+
         dto.skin = skin.id
         val entity = toEntity(dto)
         entity.skin = skin

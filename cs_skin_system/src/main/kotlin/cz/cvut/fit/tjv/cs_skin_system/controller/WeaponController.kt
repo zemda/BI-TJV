@@ -35,9 +35,9 @@ class WeaponController (val weaponService: WeaponService){
 
     @PostMapping
     @Operation(summary = "Create a weapon")
-    fun createWeapon(@RequestBody weapon: WeaponCreateDTO, @RequestParam skinId: Long): ResponseEntity<Any> {
+    fun createWeapon(@RequestBody weapon: WeaponCreateDTO): ResponseEntity<Any> {
         return try {
-            val createdWeapon = weaponService.create(weapon, skinId)
+            val createdWeapon = weaponService.create(weapon)
             ResponseEntity(createdWeapon, HttpStatus.CREATED)
         } catch (e: NoSuchElementException) {
             ResponseEntity(e.message ?: "Invalid skinId", HttpStatus.NOT_FOUND)

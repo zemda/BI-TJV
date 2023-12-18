@@ -48,7 +48,7 @@ class SkinService (@Autowired var skinRepository: JPASkinRepository,
         return toDTO(savedEntity)
     }
 
-    override fun create(dto: SkinCreateDTO, opt: Long?): SkinDTO {
+    override fun create(dto: SkinCreateDTO): SkinDTO {
         val entity = toEntity(dto)
         entity.exterior = when {
             entity.float <= 0.07 -> "Factory New"
