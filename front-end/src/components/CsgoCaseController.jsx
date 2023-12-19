@@ -204,31 +204,27 @@ const CsgoCaseController = () => {
             <h1>CSGO Cases</h1>
             <button className="button" onClick={() => setShowCases(!showCases)}>Toggle Show Cases</button>
             <div style={{ display: showCases ? 'block' : 'none' }}>
-                {showCases ? (
-                    currentCases.length > 0 ? (
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
+                {showCases && currentCases.length > 0 ? (
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cases.slice((currentPage - 1) * casesPerPage, currentPage * casesPerPage).map(csgoCase => (
+                                <tr key={csgoCase.id}>
+                                    <td>{csgoCase.id}</td>
+                                    <td>{csgoCase.name}</td>
+                                    <td>{csgoCase.price}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {cases.slice((currentPage - 1) * casesPerPage, currentPage * casesPerPage).map(csgoCase => (
-                                    <tr key={csgoCase.id}>
-                                        <td>{csgoCase.id}</td>
-                                        <td>{csgoCase.name}</td>
-                                        <td>{csgoCase.price}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p>No cases...</p>
-                    )
+                            ))}
+                        </tbody>
+                    </table>
                 ) : (
-                    <p>Loading cases...</p>
+                    <p>No cases...</p>
                 )}
 
                 {/* Pages */}

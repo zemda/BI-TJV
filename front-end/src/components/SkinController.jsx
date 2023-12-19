@@ -288,39 +288,35 @@ const SkinController = () => {
 
             <button className="button" onClick={() => setShowSkins(!showSkins)}>Toggle Show Skins</button>
             <div style={{ display: showSkins ? 'block' : 'none' }}>
-                {showSkins ? (
-                    currentSkins.length > 0 ? (
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Rarity</th>
-                                    <th>Exterior</th>
-                                    <th>Price</th>
-                                    <th>Paint Seed</th>
-                                    <th>Float</th>
+                {showSkins && currentSkins.length > 0 ? (
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Rarity</th>
+                                <th>Exterior</th>
+                                <th>Price</th>
+                                <th>Paint Seed</th>
+                                <th>Float</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {skins.slice((currentPage - 1) * skinsPerPage, currentPage * skinsPerPage).map(skin => (
+                                <tr key={skin.id}>
+                                    <td>{skin.id}</td>
+                                    <td>{skin.name}</td>
+                                    <td>{skin.rarity}</td>
+                                    <td>{skin.exterior}</td>
+                                    <td>{skin.price}</td>
+                                    <td>{skin.paintSeed}</td>
+                                    <td>{skin.float}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {skins.slice((currentPage - 1) * skinsPerPage, currentPage * skinsPerPage).map(skin => (
-                                    <tr key={skin.id}>
-                                        <td>{skin.id}</td>
-                                        <td>{skin.name}</td>
-                                        <td>{skin.rarity}</td>
-                                        <td>{skin.exterior}</td>
-                                        <td>{skin.price}</td>
-                                        <td>{skin.paintSeed}</td>
-                                        <td>{skin.float}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <p>No skins...</p>
-                    )
+                            ))}
+                        </tbody>
+                    </table>
                 ) : (
-                    <p>Loading skins...</p>
+                    <p>No skins...</p>
                 )}
 
                 <div>
