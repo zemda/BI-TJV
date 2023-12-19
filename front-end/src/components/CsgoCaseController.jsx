@@ -148,7 +148,7 @@ const CsgoCaseController = () => {
         if (!deleteCaseId) {
             setErrorMessage('Case ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
-            return; 
+            return;
         }
         deleteCase(deleteCaseId);
     };
@@ -157,7 +157,7 @@ const CsgoCaseController = () => {
         if (!changeCaseId) {
             setErrorMessage('Case ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
-            return; 
+            return;
         }
 
         if (!newPrice || isNaN(newPrice) || newPrice < 0) {
@@ -173,7 +173,7 @@ const CsgoCaseController = () => {
         if (!addOrRemCaseId) {
             setErrorMessage('Case ID can\'t be empty');
             setTimeout(() => setErrorMessage(null), 5000);
-            return; 
+            return;
         }
 
         const trimmedInput = skinIdInput.replace(/\s/g, '').replace(/,$/, '');
@@ -204,25 +204,29 @@ const CsgoCaseController = () => {
             <h1>CSGO Cases</h1>
             <button className="button" onClick={() => setShowCases(!showCases)}>Toggle Show Cases</button>
             <div style={{ display: showCases ? 'block' : 'none' }}>
-                {showCases && currentCases.length > 0 ? (
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cases.slice((currentPage - 1) * casesPerPage, currentPage * casesPerPage).map(csgoCase => (
-                                <tr key={csgoCase.id}>
-                                    <td>{csgoCase.id}</td>
-                                    <td>{csgoCase.name}</td>
-                                    <td>{csgoCase.price}</td>
+                {showCases ? (
+                    currentCases.length > 0 ? (
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {cases.slice((currentPage - 1) * casesPerPage, currentPage * casesPerPage).map(csgoCase => (
+                                    <tr key={csgoCase.id}>
+                                        <td>{csgoCase.id}</td>
+                                        <td>{csgoCase.name}</td>
+                                        <td>{csgoCase.price}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No cases...</p>
+                    )
                 ) : (
                     <p>Loading cases...</p>
                 )}

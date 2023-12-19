@@ -198,33 +198,37 @@ const WeaponController = () => {
             <button className="button" onClick={() => setShowWeapons(!showWeapons)}>Toggle Show Weapons</button>
 
             <div style={{ display: showWeapons ? 'block' : 'none' }}>
-                {showWeapons && currentWeapons.length > 0 ? (
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Tag</th>
-                                <th>Type</th>
-                                <th>Skin ID</th>
-                                <th>Skin Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {weapons.slice((currentPage - 1) * weaponsPerPage, currentPage * weaponsPerPage).map(weapon => (
-                                <tr key={weapon.id}>
-                                    <td>{weapon.id}</td>
-                                    <td>{weapon.name}</td>
-                                    <td>{weapon.tag}</td>
-                                    <td>{weapon.type}</td>
-                                    <td>{weapon.skin.id}</td>
-                                    <td>{weapon.skin.name}</td>
+                {showWeapons ? (
+                    currentWeapons.length > 0 ? (
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Tag</th>
+                                    <th>Type</th>
+                                    <th>Skin ID</th>
+                                    <th>Skin Name</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {weapons.slice((currentPage - 1) * weaponsPerPage, currentPage * weaponsPerPage).map(weapon => (
+                                    <tr key={weapon.id}>
+                                        <td>{weapon.id}</td>
+                                        <td>{weapon.name}</td>
+                                        <td>{weapon.tag}</td>
+                                        <td>{weapon.type}</td>
+                                        <td>{weapon.skin.id}</td>
+                                        <td>{weapon.skin.name}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No weapons...</p>
+                    )
                 ) : (
-                    <p>Loading skins...</p>
+                    <p>Loading weapons...</p>
                 )}
 
                 {/* Pages */}
