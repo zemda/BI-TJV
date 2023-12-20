@@ -5,13 +5,14 @@ import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
+import cz.cvut.fit.tjv.cs_skin_system.exception.EntityHasDependencyException
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
+import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
 import jakarta.transaction.Transactional
-import java.util.NoSuchElementException
 import kotlin.math.min
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.jpa.domain.Specification
@@ -28,7 +29,7 @@ class SkinService(
     override fun getById(id: Long): SkinDTO {
         val entity =
                 skinRepository.findById(id).orElseThrow {
-                    NoSuchElementException("No skin with id $id")
+                    EntityNotFoundException("No skin with id $id")
                 }
         return toDTO(entity)
     }
@@ -41,7 +42,7 @@ class SkinService(
     override fun updateSkinPrice(skinId: Long, newPrice: Double): SkinDTO {
         val skin =
                 skinRepository.findById(skinId).orElseThrow {
-                    NoSuchElementException("No skin with id $skinId")
+                    EntityNotFoundException("No skin with id $skinId")
                 }
 
         if (newPrice < 0) {
@@ -79,13 +80,13 @@ class SkinService(
     override fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>): SkinDTO {
         val skin =
                 skinRepository.findById(skinId).orElseThrow {
-                    NoSuchElementException("No skin with id $skinId")
+                    EntityNotFoundException("No skin with id $skinId")
                 }
 
         for (caseId in caseIds) {
             val csgoCase =
                     caseRepo.findById(caseId).orElseThrow {
-                        NoSuchElementException("No csgo case with id $caseId")
+                        EntityNotFoundException("No csgo case with id $caseId")
                     }
             skin.dropsFrom.add(csgoCase)
             csgoCase.contains.add(skin)
@@ -98,11 +99,11 @@ class SkinService(
     override fun deleteById(id: Long) {
         val skin =
                 skinRepository.findById(id).orElseThrow {
-                    NoSuchElementException("No skin with id $id")
+                    EntityNotFoundException("No skin with id $id")
                 }
 
         if (skin.weapon != null) {
-            throw IllegalStateException(
+            throw EntityHasDependencyException(
                     "Skin id $id is associated with weapon, Remove the weapon first"
             )
         }
@@ -149,44 +150,44 @@ class SkinService(
                 Specification.where { root: Root<Skin>, _: CriteriaQuery<*>, cb: CriteriaBuilder ->
                     skinId?.let { cb.equal(root.get<Long>("id"), it) }
                 }
-                .and { root, _, cb -> name?.let { cb.equal(root.get<String>("name"), it) } }
-                .and { root, _, cb ->
-                    rarity?.let { cb.equal(root.get<String>("rarity"), it) }
-                }
-                .and { root, _, cb ->
-                    exterior?.let { cb.equal(root.get<String>("exterior"), it) }
-                }
-                .and { root, _, cb ->
-                    price?.let { cb.greaterThanOrEqualTo(root.get("price"), it) }
-                }
-                .and { root, _, cb ->
-                    paintSeed?.let { cb.equal(root.get<Int>("paintSeed"), it) }
-                }
-                .and { root, _, cb ->
-                    float?.let { cb.lessThanOrEqualTo(root.get("float"), it) }
-                }
-                .and { root, _, cb ->
-                    weaponId?.let {
-                        cb.equal(root.get<Weapon>("weapon").get<Long>("id"), it)
-                    }
-                }
-                .and { root, _, cb ->
-                    weaponName?.let {
-                        cb.equal(root.get<Weapon>("weapon").get<String>("name"), it)
-                    }
-                }
-                .and { root, _, cb ->
-                    csgoCaseId?.let {
-                        val cases = root.join<Set<CsgoCase>, CsgoCase>("dropsFrom")
-                        cb.equal(cases.get<Long>("id"), it)
-                    }
-                }
-                .and { root, _, cb ->
-                    csgoCaseName?.let {
-                        val cases = root.join<Set<CsgoCase>, CsgoCase>("dropsFrom")
-                        cb.equal(cases.get<String>("name"), it)
-                    }
-                }
+                        .and { root, _, cb -> name?.let { cb.equal(root.get<String>("name"), it) } }
+                        .and { root, _, cb ->
+                            rarity?.let { cb.equal(root.get<String>("rarity"), it) }
+                        }
+                        .and { root, _, cb ->
+                            exterior?.let { cb.equal(root.get<String>("exterior"), it) }
+                        }
+                        .and { root, _, cb ->
+                            price?.let { cb.greaterThanOrEqualTo(root.get("price"), it) }
+                        }
+                        .and { root, _, cb ->
+                            paintSeed?.let { cb.equal(root.get<Int>("paintSeed"), it) }
+                        }
+                        .and { root, _, cb ->
+                            float?.let { cb.lessThanOrEqualTo(root.get("float"), it) }
+                        }
+                        .and { root, _, cb ->
+                            weaponId?.let {
+                                cb.equal(root.get<Weapon>("weapon").get<Long>("id"), it)
+                            }
+                        }
+                        .and { root, _, cb ->
+                            weaponName?.let {
+                                cb.equal(root.get<Weapon>("weapon").get<String>("name"), it)
+                            }
+                        }
+                        .and { root, _, cb ->
+                            csgoCaseId?.let {
+                                val cases = root.join<Set<CsgoCase>, CsgoCase>("dropsFrom")
+                                cb.equal(cases.get<Long>("id"), it)
+                            }
+                        }
+                        .and { root, _, cb ->
+                            csgoCaseName?.let {
+                                val cases = root.join<Set<CsgoCase>, CsgoCase>("dropsFrom")
+                                cb.equal(cases.get<String>("name"), it)
+                            }
+                        }
         val entities = skinRepository.findAll(spec)
         return entities.map { toDTO(it) }
     }
@@ -214,7 +215,7 @@ class SkinService(
                 dto.dropsFrom
                         ?.map { id ->
                             caseRepo.findById(id).orElseThrow {
-                                NoSuchElementException("No csgo case with id $id")
+                                EntityNotFoundException("No csgo case with id $id")
                             }
                         }
                         ?.toMutableSet()

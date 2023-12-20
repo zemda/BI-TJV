@@ -4,11 +4,12 @@ import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponDTO
+import cz.cvut.fit.tjv.cs_skin_system.exception.AlreadyAssignedException
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPAWeaponRepository
+import jakarta.persistence.EntityExistsException
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
-import java.lang.IllegalStateException
-import java.util.NoSuchElementException
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,7 +20,7 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
     override fun getById(id: Long): WeaponDTO {
         val entity =
                 weaponRepo.findById(id).orElseThrow {
-                    NoSuchElementException("Weapon with id $id not found.")
+                    EntityNotFoundException("Weapon with id $id not found.")
                 }
         return toDTO(entity)
     }
@@ -32,11 +33,11 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
     override fun create(dto: WeaponCreateDTO): WeaponDTO {
         val skin =
                 skinRepo.findById(dto.skin).orElseThrow {
-                    NoSuchElementException("Invalid skinId.")
+                    EntityNotFoundException("Invalid skinId.")
                 }
 
         if (skin.weapon != null) {
-            throw IllegalStateException("This skin is already on a weapon.")
+            throw AlreadyAssignedException("This skin is already on a weapon.")
         }
 
         dto.skin = skin.id
@@ -49,7 +50,7 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
                         entity.name
                 )
         ) {
-            throw IllegalArgumentException("Skin with this weapon already exists.")
+            throw EntityExistsException("Skin with this weapon already exists.")
         }
 
         val createdEntity = weaponRepo.save(entity)
@@ -58,7 +59,7 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
 
         val refreshedSkin =
                 skinRepo.findById(skin.id).orElseThrow {
-                    NoSuchElementException("Failed to refresh skin from db.")
+                    EntityNotFoundException("Failed to refresh skin from db.")
                 }
         createdEntity.skin = refreshedSkin
 
@@ -68,7 +69,7 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
     override fun deleteById(id: Long) {
         val weapon =
                 weaponRepo.findById(id).orElseThrow {
-                    NoSuchElementException("No weapon with id $id")
+                    EntityNotFoundException("No weapon with id $id")
                 }
 
         weapon.skin?.weapon = null
@@ -78,7 +79,7 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
     override fun updateWeaponTag(weaponId: Long, newTag: String): WeaponDTO {
         val existingWeapon =
                 weaponRepo.findById(weaponId).orElseThrow {
-                    NoSuchElementException("No weapon with id $weaponId")
+                    EntityNotFoundException("No weapon with id $weaponId")
                 }
 
         existingWeapon.tag = newTag
@@ -122,7 +123,7 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
     override fun toEntity(dto: WeaponCreateDTO): Weapon {
         val skinR =
                 skinRepo.findById(dto.skin).orElseThrow {
-                    NoSuchElementException("Invalid skinId.")
+                    EntityNotFoundException("Invalid skinId.")
                 }
 
         return Weapon().apply {

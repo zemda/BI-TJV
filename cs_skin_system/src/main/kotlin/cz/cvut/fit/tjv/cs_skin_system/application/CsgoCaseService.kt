@@ -4,8 +4,12 @@ import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
+import cz.cvut.fit.tjv.cs_skin_system.exception.EntityRelationshipExistsException
+import cz.cvut.fit.tjv.cs_skin_system.exception.EntityRelationshipNotFoundException
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
+import jakarta.persistence.EntityExistsException
+import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -19,7 +23,7 @@ class CsgoCaseService(
 
     override fun getById(id: Long): CsgoCaseDTO {
         val entity =
-                caseRepo.findById(id).orElseThrow { NoSuchElementException("No case with id $id") }
+                caseRepo.findById(id).orElseThrow { EntityNotFoundException("No case with id $id") }
         return toDTO(entity)
     }
 
@@ -34,7 +38,7 @@ class CsgoCaseService(
         }
         val entity = toEntity(dto)
         if (caseRepo.existsByName(entity.name)) {
-            throw IllegalArgumentException("Case with name ${entity.name} already exists.")
+            throw EntityExistsException("Case with name ${entity.name} already exists.")
         }
 
         val savedEntity = caseRepo.save(entity)
@@ -48,7 +52,7 @@ class CsgoCaseService(
 
     override fun deleteById(id: Long) {
         val case =
-                caseRepo.findById(id).orElseThrow { NoSuchElementException("No case with id $id") }
+                caseRepo.findById(id).orElseThrow { EntityNotFoundException("No case with id $id") }
 
         for (skin in case.contains) {
             skin.dropsFrom.remove(case)
@@ -61,7 +65,7 @@ class CsgoCaseService(
     override fun updateCsgoCase(caseId: Long, newPrice: Double): CsgoCaseDTO {
         val case =
                 caseRepo.findById(caseId).orElseThrow {
-                    NoSuchElementException("No csgo case with id $caseId")
+                    EntityNotFoundException("No csgo case with id $caseId")
                 }
 
         if (newPrice < 0) {
@@ -75,24 +79,24 @@ class CsgoCaseService(
     override fun updateCsgoCase(caseId: Long, skinIds: List<Long>, addSkins: Boolean): CsgoCaseDTO {
         val csgoCase =
                 caseRepo.findById(caseId).orElseThrow {
-                    NoSuchElementException("No csgo case with id $caseId")
+                    EntityNotFoundException("No csgo case with id $caseId")
                 }
 
         skinIds.forEach { skinId ->
             val skin =
                     skinRepo.findById(skinId).orElseThrow {
-                        NoSuchElementException("No skin with id $skinId")
+                        EntityNotFoundException("No skin with id $skinId")
                     }
 
             if (addSkins) {
                 if (!csgoCase.contains.add(skin) || !skin.dropsFrom.add(csgoCase)) {
-                    throw IllegalStateException(
+                    throw EntityRelationshipExistsException(
                             "Skin with id $skinId is already in the case with id $caseId"
                     )
                 }
             } else {
                 if (!csgoCase.contains.remove(skin) || !skin.dropsFrom.remove(csgoCase)) {
-                    throw IllegalStateException(
+                    throw EntityRelationshipNotFoundException(
                             "No skin with id $skinId found in the case with id $caseId"
                     )
                 }
@@ -112,7 +116,7 @@ class CsgoCaseService(
                 dto.contains
                         ?.map { id ->
                             skinRepo.findById(id).orElseThrow {
-                                NoSuchElementException("No skin with id $id")
+                                EntityNotFoundException("No skin with id $id")
                             }
                         }
                         ?.toMutableSet()

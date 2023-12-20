@@ -16,14 +16,8 @@ class SkinController(val skinService: SkinService) {
     @GetMapping("/{id}")
     @Operation(summary = "Fetch a skin by its id")
     fun getSkinById(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            val skin = skinService.getById(id)
-            ResponseEntity(skin, HttpStatus.OK)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val skin = skinService.getById(id)
+        return ResponseEntity(skin, HttpStatus.OK)
     }
 
     @GetMapping
@@ -36,16 +30,8 @@ class SkinController(val skinService: SkinService) {
     @PostMapping
     @Operation(summary = "Create and optionally assign it a case")
     fun createSkin(@RequestBody skin: SkinCreateDTO): ResponseEntity<Any> {
-        return try {
-            val createdSkin = skinService.create(skin)
-            ResponseEntity(createdSkin, HttpStatus.CREATED)
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity(e.message ?: "Skin already exists.", HttpStatus.BAD_REQUEST)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "No case with this id.", HttpStatus.BAD_REQUEST)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val createdSkin = skinService.create(skin)
+        return ResponseEntity(createdSkin, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}/price")
@@ -54,16 +40,8 @@ class SkinController(val skinService: SkinService) {
             @PathVariable id: Long,
             @RequestParam newPrice: Double
     ): ResponseEntity<Any> {
-        return try {
-            val updatedSkin = skinService.updateSkinPrice(id, newPrice)
-            ResponseEntity(updatedSkin, HttpStatus.OK)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity(e.message ?: "Invalid new price", HttpStatus.BAD_REQUEST)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val updatedSkin = skinService.updateSkinPrice(id, newPrice)
+        return ResponseEntity(updatedSkin, HttpStatus.OK)
     }
 
     @PutMapping("/{id}/cases")
@@ -72,32 +50,15 @@ class SkinController(val skinService: SkinService) {
             @PathVariable id: Long,
             @RequestBody caseIds: List<Long>
     ): ResponseEntity<Any> {
-        return try {
-            val updatedSkin = skinService.updateSkinDropsFrom(id, caseIds)
-            ResponseEntity(updatedSkin, HttpStatus.OK)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Skin or case not found", HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val updatedSkin = skinService.updateSkinDropsFrom(id, caseIds)
+        return ResponseEntity(updatedSkin, HttpStatus.OK)
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete given skin")
     fun deleteSkin(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            skinService.deleteById(id)
-            ResponseEntity(HttpStatus.NO_CONTENT)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Skin not found", HttpStatus.NOT_FOUND)
-        } catch (e: IllegalStateException) {
-            ResponseEntity(
-                    e.message ?: "Skin is on a weapon, delete that first",
-                    HttpStatus.CONFLICT
-            )
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        skinService.deleteById(id)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
     @GetMapping("/noWeapon")

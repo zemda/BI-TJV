@@ -16,14 +16,8 @@ class WeaponController(val weaponService: WeaponService) {
     @GetMapping("/{id}")
     @Operation(summary = "Get a weapon by its id")
     fun getWeaponById(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            val weapon = weaponService.getById(id)
-            ResponseEntity(weapon, HttpStatus.OK)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Weapon not found", HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val weapon = weaponService.getById(id)
+        return ResponseEntity(weapon, HttpStatus.OK)
     }
 
     @GetMapping
@@ -36,41 +30,21 @@ class WeaponController(val weaponService: WeaponService) {
     @PostMapping
     @Operation(summary = "Create a weapon")
     fun createWeapon(@RequestBody weapon: WeaponCreateDTO): ResponseEntity<Any> {
-        return try {
-            val createdWeapon = weaponService.create(weapon)
-            ResponseEntity(createdWeapon, HttpStatus.CREATED)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Invalid skinId", HttpStatus.NOT_FOUND)
-        } catch (e: IllegalStateException) {
-            ResponseEntity(e.message ?: "This skin is already on a weapon", HttpStatus.CONFLICT)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val createdWeapon = weaponService.create(weapon)
+        return ResponseEntity(createdWeapon, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}/tag")
     @Operation(summary = "Update tag of a weapon with given id")
     fun updateWeaponTag(@PathVariable id: Long, @RequestParam newTag: String): ResponseEntity<Any> {
-        return try {
-            val updatedWeapon = weaponService.updateWeaponTag(id, newTag)
-            ResponseEntity(updatedWeapon, HttpStatus.OK)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Weapon not found", HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        val updatedWeapon = weaponService.updateWeaponTag(id, newTag)
+        return ResponseEntity(updatedWeapon, HttpStatus.OK)
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete given weapon")
     fun deleteWeapon(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            weaponService.deleteById(id)
-            ResponseEntity(HttpStatus.NO_CONTENT)
-        } catch (e: NoSuchElementException) {
-            ResponseEntity(e.message ?: "Weapon not found", HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            ResponseEntity(e.message ?: "Server error", HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        weaponService.deleteById(id)
+        return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }
