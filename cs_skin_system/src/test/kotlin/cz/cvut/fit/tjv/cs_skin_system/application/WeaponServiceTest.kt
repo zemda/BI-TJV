@@ -3,6 +3,7 @@ import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponCreateDTO
+import cz.cvut.fit.tjv.cs_skin_system.exception.AlreadyAssignedException
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPAWeaponRepository
 import java.util.*
@@ -101,7 +102,7 @@ class WeaponServiceTest {
                 WeaponCreateDTO(name = "Test Weapon", type = "Rifle", tag = "Test Tag", skin = 1L)
         `when`(skinRepo.findById(1L)).thenReturn(Optional.of(assignedSkin))
 
-        assertThrows<Exception> { weaponService.create(weaponCreateDTO) }
+        assertThrows<AlreadyAssignedException> { weaponService.create(weaponCreateDTO) }
 
         verify(weaponRepo, never()).save(any())
     }

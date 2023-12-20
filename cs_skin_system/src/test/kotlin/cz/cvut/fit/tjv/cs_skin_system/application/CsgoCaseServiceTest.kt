@@ -1,6 +1,8 @@
 import cz.cvut.fit.tjv.cs_skin_system.application.CsgoCaseService
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
+import cz.cvut.fit.tjv.cs_skin_system.exception.EntityRelationshipExistsException
+import cz.cvut.fit.tjv.cs_skin_system.exception.EntityRelationshipNotFoundException
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPACsgoCaseRepository
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import java.util.*
@@ -33,7 +35,7 @@ class CsgoCaseServiceTest {
         `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin))
 
         val exception =
-                assertThrows<IllegalStateException> {
+                assertThrows<EntityRelationshipExistsException> {
                     csgoCaseService.updateCsgoCase(existingCase.id, listOf(skin.id), true)
                 }
 
@@ -55,7 +57,7 @@ class CsgoCaseServiceTest {
         `when`(skinRepo.findById(100L)).thenReturn(Optional.of(skin))
 
         val exception =
-                assertThrows<IllegalStateException> {
+                assertThrows<EntityRelationshipNotFoundException> {
                     csgoCaseService.updateCsgoCase(existingCase.id, listOf(skin.id), false)
                 }
 
