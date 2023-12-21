@@ -3,7 +3,7 @@
 ### Jak aplikaci spustit?
 - `docker-compose up (--build)` (pro wsl možná nuto se sudo)
 ### Jak vyplnit tabulku základními daty (i pro reset)
-- `docker exec -it semestralka-db-1 psql -U tjv -d tjv`
+- `docker exec -it conteiner_name_or_id psql -U tjv -d tjv` (`docker ps` a vzít název/id kontejneru pro databázi, [main_folder_name]-db-1)
 - tjv=# `\i /data.sql`
 
 <b>Url webu:</b> http://localhost:5173/
