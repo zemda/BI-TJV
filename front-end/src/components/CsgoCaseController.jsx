@@ -29,6 +29,11 @@ const CsgoCaseController = () => {
         getCases();
     }, []);
 
+    const handleError = (message) => {
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(null), 5000);
+    }
+
     const getCases = () => {
         axios.get('http://localhost:8080/csgoCase')
             .then(response => {
@@ -36,8 +41,7 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error fetching data: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -52,8 +56,7 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error creating case: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -66,8 +69,7 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error deleting case: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -81,8 +83,7 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error changing case price: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -101,8 +102,7 @@ const CsgoCaseController = () => {
             })
             .catch(error => {
                 console.error('Error adding or removing skins to case: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -115,28 +115,24 @@ const CsgoCaseController = () => {
 
     const handleCreateCase = () => {
         if (!newCase || !newCase.name || newCase.name.lenght > 50) {
-            setErrorMessage('Case name must be 1-50 characters long');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Case name must be 1-50 characters long');
             return;
         }
 
         if (!newCase.price || isNaN(newCase.price) || !newCase.price < 0) {
-            setErrorMessage('Case price must be a positive number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Case price must be a positive number');
             return;
         }
 
         const trimmedInput = createSkinIdInput.replace(/\s/g, '').replace(/,$/, '');
         if (!trimmedInput) {
-            setErrorMessage('You must enter at least one skin ID.');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('You must enter at least one skin ID.');
             return;
         }
 
         const regex = /^(\d+,)*\d+$/;
         if (!regex.test(trimmedInput)) {
-            setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Skin ID(s) must be number(s) (separated by commas)');
             return;
         }
 
@@ -146,8 +142,7 @@ const CsgoCaseController = () => {
 
     const handleDeleteCase = () => {
         if (!deleteCaseId) {
-            setErrorMessage('Case ID can\'t be empty');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Case ID can\'t be empty');
             return;
         }
         deleteCase(deleteCaseId);
@@ -155,14 +150,12 @@ const CsgoCaseController = () => {
 
     const handleChangeCasePrice = () => {
         if (!changeCaseId) {
-            setErrorMessage('Case ID can\'t be empty');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Case ID can\'t be empty');
             return;
         }
 
         if (!newPrice || isNaN(newPrice) || newPrice < 0) {
-            setErrorMessage('Price must be a positive number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Price must be a positive number');
             return;
         }
 
@@ -171,22 +164,19 @@ const CsgoCaseController = () => {
 
     const handleAddOrRemoveSkinsToCase = () => {
         if (!addOrRemCaseId) {
-            setErrorMessage('Case ID can\'t be empty');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Case ID can\'t be empty');
             return;
         }
 
         const trimmedInput = skinIdInput.replace(/\s/g, '').replace(/,$/, '');
         if (!trimmedInput) {
-            setErrorMessage('You must enter at least one skin ID.');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('You must enter at least one skin ID.');
             return;
         }
 
         const regex = /^(\d+,)*\d+$/;
         if (!regex.test(trimmedInput)) {
-            setErrorMessage('Skin ID(s) must be number(s) (separated by commas)');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Skin ID(s) must be number(s) (separated by commas)');
             return;
         }
         const skinIds = trimmedInput.split(/\s*,\s*/).map(Number);

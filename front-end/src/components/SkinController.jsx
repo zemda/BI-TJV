@@ -41,6 +41,11 @@ const SkinController = () => {
         getSkins();
     }, []);
 
+    const handleError = (message) => {
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(null), 5000);
+    }
+
     const getSkins = () => {
         axios.get('http://localhost:8080/skins')
             .then(response => {
@@ -48,8 +53,7 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error fetching data: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -64,8 +68,7 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error creating skin: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -84,8 +87,7 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error updating skin price: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -100,8 +102,7 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error updating skin drops from: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -114,8 +115,7 @@ const SkinController = () => {
             })
             .catch(error => {
                 console.error('Error deleting skin: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -143,32 +143,27 @@ const SkinController = () => {
 
     const handleCreateSkin = () => {
         if (!newSkin || !newSkin.name || newSkin.name.length > 50) {
-            setErrorMessage('Name must be 50 characters or less');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Name must be 50 characters or less');
             return;
         }
 
         if (!newSkin.rarity) {
-            setErrorMessage('Rarity must be selected');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Rarity must be selected');
             return;
         }
 
         if (!newSkin.price || isNaN(newSkin.price) || newSkin.price < 0) {
-            setErrorMessage('Price must be a positive number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Price must be a positive number');
             return;
         }
 
         if (!newSkin.paintSeed || isNaN(newSkin.paintSeed) || newSkin.paintSeed < 0 || newSkin.paintSeed > 1000) {
-            setErrorMessage('Paint Seed must be a number between 0 and 1000');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Paint Seed must be a number between 0 and 1000');
             return;
         }
 
         if (!newSkin.float || isNaN(newSkin.float) || newSkin.float < 0 || newSkin.float > 1) {
-            setErrorMessage('Float must be a number between 0 and 1');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Float must be a number between 0 and 1');
             return;
         }
 
@@ -177,8 +172,7 @@ const SkinController = () => {
         if (trimmedInput !== '') {
             const regex = /^(\d+,)*\d+$/;
             if (!regex.test(trimmedInput)) {
-                setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError('Case ID(s) should be number(s) (separated by commas) or empty');
                 return;
             }
             caseIds = trimmedInput.split(/\s*,\s*/).map(Number);
@@ -189,14 +183,12 @@ const SkinController = () => {
 
     const handleUpdateSkinPrice = () => {
         if (!skinIdUpdatePrice) {
-            setErrorMessage('Skin ID can\'t be empty');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Skin ID can\'t be empty');
             return;
         }
 
         if (!newPrice || isNaN(newPrice) || newPrice < 0) {
-            setErrorMessage('Price must be a positive number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Price must be a positive number');
             return;
         }
 
@@ -205,8 +197,7 @@ const SkinController = () => {
 
     const handleUpdateSkinDropsFrom = () => {
         if (!skinIdDropsFrom) {
-            setErrorMessage('Skin ID must be provided');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Skin ID must be provided');
             return;
         }
 
@@ -215,14 +206,12 @@ const SkinController = () => {
         if (trimmedInput !== '') {
             const regex = /^(\d+,)*\d+$/;
             if (!regex.test(trimmedInput)) {
-                setErrorMessage('Case ID(s) should be number(s) (separated by commas) or empty');
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError('Case ID(s) should be number(s) (separated by commas) or empty');
                 return;
             }
             caseIds = trimmedInput.split(/\s*,\s*/).map(Number);
         } else {
-            setErrorMessage('You must enter at least one ID');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('You must enter at least one ID');
             return;
         }
 
@@ -250,26 +239,22 @@ const SkinController = () => {
 
     const handleFilterSkins = () => {
         if (filterParams.name && filterParams.name.length > 50) {
-            setErrorMessage('Name must be 50 characters or less');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Name must be 50 characters or less');
             return;
         }
 
         if (filterParams.price && (isNaN(filterParams.price) || filterParams.price < 0)) {
-            setErrorMessage('Price must be a positive number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Price must be a positive number');
             return;
         }
 
         if (filterParams.paintSeed && (isNaN(filterParams.paintSeed))) {
-            setErrorMessage('Paint Seed must be a number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Paint Seed must be a number');
             return;
         }
 
         if (filterParams.float && (isNaN(filterParams.float))) {
-            setErrorMessage('Float must be a number');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Float must be a number');
             return;
         }
 

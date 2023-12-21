@@ -60,10 +60,19 @@ const WeaponController = () => {
         getSkinsWithNoWeapon();
     }, []);
 
+    const handleError = (message) => {
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(null), 5000);
+    }
+
     const getWeapons = () => {
         axios.get('http://localhost:8080/weapons')
             .then(response => {
                 setWeapons(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data: ', error);
+                handleError(error.response.data);
             });
     };
 
@@ -86,8 +95,7 @@ const WeaponController = () => {
             })
             .catch(error => {
                 console.error('Error creating weapon: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -105,8 +113,7 @@ const WeaponController = () => {
             })
             .catch(error => {
                 console.error('Error updating weapon\'s tag: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -120,8 +127,7 @@ const WeaponController = () => {
             })
             .catch(error => {
                 console.error('Error deleting weapon: ', error);
-                setErrorMessage(error.response.data);
-                setTimeout(() => setErrorMessage(null), 5000);
+                handleError(error.response.data);
             });
     };
 
@@ -134,26 +140,22 @@ const WeaponController = () => {
 
     const handleCreateWeapon = () => {
         if (!newWeapon || !newWeapon.name || newWeapon.name.length > 50) {
-            setErrorMessage('Weapon name must be 1-50 characters long');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Weapon name must be 1-50 characters long');
             return;
         }
 
         if (!newWeapon.type || newWeapon.type.length > 50) {
-            setErrorMessage('Weapon type must be 1-50 characters long');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Weapon type must be 1-50 characters long');
             return;
         }
 
         if (newWeapon.tag && newWeapon.tag.length > 50) {
-            setErrorMessage('Weapon tag must be 50 characters or less');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Weapon tag must be 50 characters or less');
             return;
         }
 
         if (!selectedSkin) {
-            setErrorMessage('Skin must be selected');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Skin must be selected');
             return;
         }
 
@@ -162,14 +164,12 @@ const WeaponController = () => {
 
     const handleUpdateWeaponTag = () => {
         if (!updateTagWeaponId) {
-            setErrorMessage('Weapon ID can\'t be empty');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Weapon ID can\'t be empty');
             return;
         }
 
         if (newTag && newTag.length > 50) {
-            setErrorMessage('New tag must be 50 characters or less');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('New tag must be 50 characters or less');
             return;
         }
 
@@ -178,8 +178,7 @@ const WeaponController = () => {
 
     const handleDeleteWeapon = () => {
         if (!deleteWeaponId) {
-            setErrorMessage('Weapon ID can\'t be empty');
-            setTimeout(() => setErrorMessage(null), 5000);
+            handleError('Weapon ID can\'t be empty');
             return;
         }
 
