@@ -1,5 +1,12 @@
 # BI-TJV semestrální práce
 
+### Jak aplikaci spustit?
+- `docker-compose up (--build)` (pro wsl možná nuto se sudo)
+### Jak vyplnit tabulku základními daty (i pro reset)
+- `docker exec -it semestralka-db-1 psql -U tjv -d tjv`
+- tjv=# `\i /data.sql`
+
+<b>Url webu:</b> http://localhost:5173/
 
 ## CSGO Skin Management System
 Jedná se o částečný model aplikace, kde si hráči mohou prohlížet různé skiny a sledovat jejich cenu. Takových skinů a různých zbraní existuje mnoho, mimo to každý skin může mít rozlišné atributy, tak i jeho cena se může výrazně lišit, i když se předměty mohou zdát pro nezkušené oko totožné.
