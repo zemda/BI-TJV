@@ -4,6 +4,7 @@ import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -128,6 +129,7 @@ interface SkinControllerInterface {
 
     @Operation(
         summary = "Fetch skins that meet the parameters",
+        description = "Filter skins based on a set of optional criteria",
         responses =
             [
                 ApiResponse(
@@ -136,7 +138,20 @@ interface SkinControllerInterface {
                     content = [Content(schema = Schema(implementation = Skin::class))]
                 ),
                 ApiResponse(responseCode = "500", description = "Server error")
-            ]
+            ],
+        parameters = [
+            Parameter(name = "skinId", description = "Filter by skin ID", required = false),
+            Parameter(name = "name", description = "Filter by skin name", required = false),
+            Parameter(name = "rarity", description = "Filter by skin rarity", required = false),
+            Parameter(name = "exterior", description = "Filter by skin exterior", required = false),
+            Parameter(name = "price", description = "Filter by skin price higher than", required = false),
+            Parameter(name = "paintSeed", description = "Filter by skin paint seed", required = false),
+            Parameter(name = "float", description = "Filter by skin float less than", required = false),
+            Parameter(name = "weaponId", description = "Filter by weapon ID", required = false),
+            Parameter(name = "weaponName", description = "Filter by weapon name", required = false),
+            Parameter(name = "csgoCaseId", description = "Filter by CS:GO case ID where the skin can be found", required = false),
+            Parameter(name = "csgoCaseName", description = "Filter by CS:GO case name where the skin can be found", required = false)
+        ]
     )
     @GetMapping("/filter")
     fun filterSkins(
