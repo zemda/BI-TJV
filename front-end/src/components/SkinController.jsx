@@ -261,34 +261,45 @@ const SkinController = () => {
         getFilterSkins(filterParams);
     };
 
-    const handleSortChange = (event) => {
-        const sortMethod = event.target.value;
+    const sortSkins = (skins, sortMethod) => {
         let sortedSkins;
     
         switch (sortMethod) {
             case 'price_asc':
-                sortedSkins = [...filterSkins].sort((a, b) => a.price - b.price);
+                sortedSkins = [...skins].sort((a, b) => a.price - b.price);
                 break;
             case 'price_desc':
-                sortedSkins = [...filterSkins].sort((a, b) => b.price - a.price);
+                sortedSkins = [...skins].sort((a, b) => b.price - a.price);
                 break;
             case 'float_asc':
-                sortedSkins = [...filterSkins].sort((a, b) => a.float - b.float);
+                sortedSkins = [...skins].sort((a, b) => a.float - b.float);
                 break;
             case 'float_desc':
-                sortedSkins = [...filterSkins].sort((a, b) => b.float - a.float);
+                sortedSkins = [...skins].sort((a, b) => b.float - a.float);
                 break;
             case 'id_asc':
-                sortedSkins = [...filterSkins].sort((a, b) => a.id - b.id);
+                sortedSkins = [...skins].sort((a, b) => a.id - b.id);
                 break;
             case 'id_desc':
-                sortedSkins = [...filterSkins].sort((a, b) => b.id - a.id);
+                sortedSkins = [...skins].sort((a, b) => b.id - a.id);
                 break;
             default:
-                sortedSkins = filterSkins;
+                sortedSkins = skins;
         }
     
+        return sortedSkins;
+    };
+    
+    const handleSortChange = (event) => {
+        const sortMethod = event.target.value;
+        const sortedSkins = sortSkins(filterSkins, sortMethod);
         setFilterSkins(sortedSkins);
+    };
+    
+    const handleAllSkinsSortChange = (event) => {
+        const sortMethod = event.target.value;
+        const sortedSkins = sortSkins(skins, sortMethod);
+        setSkins(sortedSkins);
     };
 
     return (
@@ -302,6 +313,15 @@ const SkinController = () => {
             <h1>Skins</h1>
 
             <button className="button" onClick={() => setShowSkins(!showSkins)}>Toggle Show Skins</button>
+            <select className="input-field" name="sort" onChange={handleAllSkinsSortChange}>
+                <option value="">Select sort method</option>
+                <option value="price_asc">Price (Low to High)</option>
+                <option value="price_desc">Price (High to Low)</option>
+                <option value="float_asc">Float (Low to High)</option>
+                <option value="float_desc">Float (High to Low)</option>
+                <option value="id_asc">ID (Low to High)</option>
+                <option value="id_desc">ID (High to Low)</option>
+            </select>
             <div style={{ display: showSkins ? 'block' : 'none' }}>
                 {showSkins && currentSkins.length > 0 ? (
                     <table className="table">
