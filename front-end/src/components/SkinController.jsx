@@ -261,6 +261,36 @@ const SkinController = () => {
         getFilterSkins(filterParams);
     };
 
+    const handleSortChange = (event) => {
+        const sortMethod = event.target.value;
+        let sortedSkins;
+    
+        switch (sortMethod) {
+            case 'price_asc':
+                sortedSkins = [...filterSkins].sort((a, b) => a.price - b.price);
+                break;
+            case 'price_desc':
+                sortedSkins = [...filterSkins].sort((a, b) => b.price - a.price);
+                break;
+            case 'float_asc':
+                sortedSkins = [...filterSkins].sort((a, b) => a.float - b.float);
+                break;
+            case 'float_desc':
+                sortedSkins = [...filterSkins].sort((a, b) => b.float - a.float);
+                break;
+            case 'id_asc':
+                sortedSkins = [...filterSkins].sort((a, b) => a.id - b.id);
+                break;
+            case 'id_desc':
+                sortedSkins = [...filterSkins].sort((a, b) => b.id - a.id);
+                break;
+            default:
+                sortedSkins = filterSkins;
+        }
+    
+        setFilterSkins(sortedSkins);
+    };
+
     return (
         <div className="container">
             {errorMessage && (
@@ -372,6 +402,15 @@ const SkinController = () => {
                         <input className="input-field" name="weaponName" placeholder="Weapon Name" onChange={handleFilterParamsChange} value={filterParams.weaponName || ''} />
                         <input className="input-field" name="csgoCaseId" type="number" placeholder="CSGO Case ID" onChange={handleFilterParamsChange} value={filterParams.csgoCaseId || ''} />
                         <input className="input-field" name="csgoCaseName" placeholder="CSGO Case Name" onChange={handleFilterParamsChange} value={filterParams.csgoCaseName || ''} />
+                        <select className="input-field" name="sort" onChange={handleSortChange}>
+                            <option value="">Select sort method</option>
+                            <option value="price_asc">Price (Low to High)</option>
+                            <option value="price_desc">Price (High to Low)</option>
+                            <option value="float_asc">Float (Low to High)</option>
+                            <option value="float_desc">Float (High to Low)</option>
+                            <option value="id_asc">ID (Low to High)</option>
+                            <option value="id_desc">ID (High to Low)</option>
+                        </select>
                         <button className="button" onClick={handleFilterSkins}>Filter Skins</button>
                     </div>
                 )}
