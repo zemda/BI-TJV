@@ -183,6 +183,30 @@ const CsgoCaseController = () => {
         addOrRemoveSkinsToCase(addOrRemCaseId, skinIds, addSkins);
     }
 
+    const handleSortChange = (event) => {
+        const sortMethod = event.target.value;
+        let sortedCases;
+    
+        switch (sortMethod) {
+            case 'price_asc':
+                sortedCases = [...cases].sort((a, b) => a.price - b.price);
+                break;
+            case 'price_desc':
+                sortedCases = [...cases].sort((a, b) => b.price - a.price);
+                break;
+            case 'id_asc':
+                sortedCases = [...cases].sort((a, b) => a.id - b.id);
+                break;
+            case 'id_desc':
+                sortedCases = [...cases].sort((a, b) => b.id - a.id);
+                break;
+            default:
+                sortedCases = cases;
+        }
+    
+        setCases(sortedCases);
+    };
+
     return (
         <div className="container">
             {errorMessage && (
@@ -193,6 +217,13 @@ const CsgoCaseController = () => {
 
             <h1>CSGO Cases</h1>
             <button className="button" onClick={() => setShowCases(!showCases)}>Toggle Show Cases</button>
+            <select className="input-field" name="sort" onChange={handleSortChange}>
+                <option value="">Select sort method</option>
+                <option value="price_asc">Price (Low to High)</option>
+                <option value="price_desc">Price (High to Low)</option>
+                <option value="id_asc">ID (Low to High)</option>
+                <option value="id_desc">ID (High to Low)</option>
+            </select>
             <div style={{ display: showCases ? 'block' : 'none' }}>
                 {showCases && currentCases.length > 0 ? (
                     <table className="table">
