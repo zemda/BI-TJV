@@ -186,7 +186,7 @@ const CsgoCaseController = () => {
     const handleSortChange = (event) => {
         const sortMethod = event.target.value;
         let sortedCases;
-    
+
         switch (sortMethod) {
             case 'price_asc':
                 sortedCases = [...cases].sort((a, b) => a.price - b.price);
@@ -203,7 +203,7 @@ const CsgoCaseController = () => {
             default:
                 sortedCases = cases;
         }
-    
+
         setCases(sortedCases);
     };
 
@@ -217,7 +217,7 @@ const CsgoCaseController = () => {
 
             <h1>CSGO Cases</h1>
             <button className="button" onClick={() => setShowCases(!showCases)}>Toggle Show Cases</button>
-            <select className="input-field" name="sort" onChange={handleSortChange}>
+            <select className="input-field" name="sort" onChange={handleSortChange} style={{ marginLeft: '10px' }}>
                 <option value="">Select sort method</option>
                 <option value="price_asc">Price (Low to High)</option>
                 <option value="price_desc">Price (High to Low)</option>

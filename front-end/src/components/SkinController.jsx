@@ -263,7 +263,7 @@ const SkinController = () => {
 
     const sortSkins = (skins, sortMethod) => {
         let sortedSkins;
-    
+
         switch (sortMethod) {
             case 'price_asc':
                 sortedSkins = [...skins].sort((a, b) => a.price - b.price);
@@ -286,16 +286,16 @@ const SkinController = () => {
             default:
                 sortedSkins = skins;
         }
-    
+
         return sortedSkins;
     };
-    
+
     const handleSortChange = (event) => {
         const sortMethod = event.target.value;
         const sortedSkins = sortSkins(filterSkins, sortMethod);
         setFilterSkins(sortedSkins);
     };
-    
+
     const handleAllSkinsSortChange = (event) => {
         const sortMethod = event.target.value;
         const sortedSkins = sortSkins(skins, sortMethod);
@@ -313,7 +313,7 @@ const SkinController = () => {
             <h1>Skins</h1>
 
             <button className="button" onClick={() => setShowSkins(!showSkins)}>Toggle Show Skins</button>
-            <select className="input-field" name="sort" onChange={handleAllSkinsSortChange}>
+            <select className="input-field" name="sort" onChange={handleAllSkinsSortChange} style={{ marginLeft: '10px' }}>
                 <option value="">Select sort method</option>
                 <option value="price_asc">Price (Low to High)</option>
                 <option value="price_desc">Price (High to Low)</option>
@@ -396,9 +396,9 @@ const SkinController = () => {
             <h2>Filter skins</h2>
             <div className="form">
                 <div className="form-group">
-                    <button onClick={() => setIsFilterModalOpen(!isFilterModalOpen)}>Toggle Filters</button>
-                    <button onClick={handleClearResults}>Clear Results</button>
-                    <button onClick={handleClearFilters}>Clear Filter</button>
+                    <button style={{ marginLeft: '10px', marginBottom: '10px' }} onClick={() => setIsFilterModalOpen(!isFilterModalOpen)}>Toggle Filters</button>
+                    <button style={{ marginLeft: '10px', marginBottom: '10px' }} onClick={handleClearResults}>Clear Results</button>
+                    <button style={{ marginLeft: '10px', marginBottom: '10px' }} onClick={handleClearFilters}>Clear Filter</button>
                 </div>
                 {isFilterModalOpen && (
                     <div>

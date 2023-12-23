@@ -188,7 +188,7 @@ const WeaponController = () => {
     const handleSortChange = (event) => {
         const sortMethod = event.target.value;
         let sortedWeapons;
-    
+
         switch (sortMethod) {
             case 'weapon_id_asc':
                 sortedWeapons = [...weapons].sort((a, b) => a.id - b.id);
@@ -211,7 +211,7 @@ const WeaponController = () => {
             default:
                 sortedWeapons = weapons;
         }
-    
+
         setWeapons(sortedWeapons);
     };
 
@@ -225,7 +225,7 @@ const WeaponController = () => {
 
             <h1>Weapons</h1>
             <button className="button" onClick={() => setShowWeapons(!showWeapons)}>Toggle Show Weapons</button>
-            <select className="input-field" name="sort" onChange={handleSortChange}>
+            <select className="input-field" name="sort" onChange={handleSortChange} style={{ marginLeft: '10px' }}>
                 <option value="">Select sort method</option>
                 <option value="weapon_id_asc">Weapon ID (Low to High)</option>
                 <option value="weapon_id_desc">Weapon ID (High to Low)</option>
