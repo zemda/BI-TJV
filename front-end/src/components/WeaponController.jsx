@@ -185,6 +185,36 @@ const WeaponController = () => {
         deleteWeapon(deleteWeaponId);
     };
 
+    const handleSortChange = (event) => {
+        const sortMethod = event.target.value;
+        let sortedWeapons;
+    
+        switch (sortMethod) {
+            case 'weapon_id_asc':
+                sortedWeapons = [...weapons].sort((a, b) => a.id - b.id);
+                break;
+            case 'weapon_id_desc':
+                sortedWeapons = [...weapons].sort((a, b) => b.id - a.id);
+                break;
+            case 'skin_id_asc':
+                sortedWeapons = [...weapons].sort((a, b) => a.skin.id - b.skin.id);
+                break;
+            case 'skin_id_desc':
+                sortedWeapons = [...weapons].sort((a, b) => b.skin.id - a.skin.id);
+                break;
+            case 'price_asc':
+                sortedWeapons = [...weapons].sort((a, b) => a.skin.price - b.skin.price);
+                break;
+            case 'price_desc':
+                sortedWeapons = [...weapons].sort((a, b) => b.skin.price - a.skin.price);
+                break;
+            default:
+                sortedWeapons = weapons;
+        }
+    
+        setWeapons(sortedWeapons);
+    };
+
     return (
         <div className="container">
             {errorMessage && (
@@ -195,6 +225,15 @@ const WeaponController = () => {
 
             <h1>Weapons</h1>
             <button className="button" onClick={() => setShowWeapons(!showWeapons)}>Toggle Show Weapons</button>
+            <select className="input-field" name="sort" onChange={handleSortChange}>
+                <option value="">Select sort method</option>
+                <option value="weapon_id_asc">Weapon ID (Low to High)</option>
+                <option value="weapon_id_desc">Weapon ID (High to Low)</option>
+                <option value="skin_id_asc">Skin ID (Low to High)</option>
+                <option value="skin_id_desc">Skin ID (High to Low)</option>
+                <option value="price_asc">Price (Low to High)</option>
+                <option value="price_desc">Price (High to Low)</option>
+            </select>
 
             <div style={{ display: showWeapons ? 'block' : 'none' }}>
                 {showWeapons && currentWeapons.length > 0 ? (
@@ -207,6 +246,7 @@ const WeaponController = () => {
                                 <th>Type</th>
                                 <th>Skin ID</th>
                                 <th>Skin Name</th>
+                                <th>Price</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -218,6 +258,7 @@ const WeaponController = () => {
                                     <td>{weapon.type}</td>
                                     <td>{weapon.skin.id}</td>
                                     <td>{weapon.skin.name}</td>
+                                    <td>{weapon.skin.price}</td>
                                 </tr>
                             ))}
                         </tbody>
