@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 @Entity
 @Table(name = "skin")
 class Skin {
