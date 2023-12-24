@@ -17,15 +17,12 @@ import org.mockito.junit.jupiter.MockitoExtension
 class SkinServiceTest {
 
     @InjectMocks lateinit var skinService: SkinService
-
     @Mock lateinit var skinRepo: JPASkinRepository
-
     @Mock lateinit var csgoCaseRepo: JPACsgoCaseRepository
-
     @Mock lateinit var weaponService: WeaponService
 
     @Test
-    fun `updateSkin valid price test`() {
+    fun shouldUpdateSkinValidPrice() {
         val existingSkin =
                 Skin().apply {
                     id = 1L
@@ -52,7 +49,7 @@ class SkinServiceTest {
     }
 
     @Test
-    fun `updateSkinPrice invalid price test`() {
+    fun shouldThrowIllegalArgumentExceptionWhenUpdatingSkinInvalidPrice() {
         val skin =
                 Skin().apply {
                     id = 1L

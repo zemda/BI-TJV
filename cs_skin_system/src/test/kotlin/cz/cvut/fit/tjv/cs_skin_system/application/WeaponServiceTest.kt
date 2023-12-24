@@ -20,13 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension
 class WeaponServiceTest {
 
     @InjectMocks lateinit var weaponService: WeaponService
-
     @Mock lateinit var weaponRepo: JPAWeaponRepository
-
     @Mock lateinit var skinRepo: JPASkinRepository
 
     @Test
-    fun `updateWeaponTag test`() {
+    fun shouldUpdateWeaponTag() {
         val existingWeapon =
                 Weapon().apply {
                     id = 1L
@@ -53,7 +51,7 @@ class WeaponServiceTest {
     }
 
     @Test
-    fun `createWeapon assigns skin successfully`() {
+    fun shouldAssignSkinSuccessfullyWhenCreatingWeapon() {
         val newSkin =
                 Skin().apply {
                     id = 1L
@@ -91,7 +89,7 @@ class WeaponServiceTest {
     }
 
     @Test
-    fun `createWeapon throws exception when skin is already assigned to another weapon`() {
+    fun shouldThrowAlreadyAssignedExceptionWhenSkinAssignedToOtherWeapon() {
         val otherWeapon = Weapon().apply { id = 3L }
         val assignedSkin =
                 Skin().apply {

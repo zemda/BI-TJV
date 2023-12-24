@@ -20,13 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension
 class CsgoCaseServiceTest {
 
     @InjectMocks lateinit var csgoCaseService: CsgoCaseService
-
     @Mock lateinit var caseRepo: JPACsgoCaseRepository
-
     @Mock lateinit var skinRepo: JPASkinRepository
 
     @Test
-    fun `updateCsgoCase add already existent skin to case test`() {
+    fun shouldThrowEntityRelationshipExistsException_whenAddingExistentSkinToCase() {
         val existingCase = CsgoCase().apply { id = 1L }
         val skin = Skin().apply { id = 100L }
         existingCase.contains.add(skin)
@@ -49,7 +47,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase remove skin from case which is not there test`() {
+    fun shouldThrowEntityRelationshipNotFoundException_whenRemovingSkinNotInCase() {
         val existingCase = CsgoCase().apply { id = 1L }
         val skin = Skin().apply { id = 100L }
 
@@ -71,7 +69,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase add multiple skins test`() {
+    fun shouldAddMultipleSkinsToCase() {
         val existingCase = CsgoCase().apply { id = 1L }
         val skin1 = Skin().apply { id = 100L }
         val skin2 = Skin().apply { id = 110L }
@@ -103,7 +101,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase remove multiple skins test`() {
+    fun shouldRemoveMultipleSkinsFromCase() {
         val skin1 = Skin().apply { id = 100L }
         val skin2 = Skin().apply { id = 110L }
         val skin3 = Skin().apply { id = 101L }
@@ -143,7 +141,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase update case price test`() {
+    fun shouldUpdateCasePrice() {
         val existingCase =
                 CsgoCase().apply {
                     id = 1L
@@ -170,7 +168,7 @@ class CsgoCaseServiceTest {
     }
 
     @Test
-    fun `updateCsgoCase update with invalid new price test`() {
+    fun shouldThrowIllegalArgumentException_whenNewPriceIsInvalid() {
         val existingCase =
                 CsgoCase().apply {
                     id = 1L
