@@ -42,7 +42,7 @@ class CsgoCaseService(
         }
 
         val savedEntity = caseRepo.save(entity)
-        for (skin in entity.contains) {
+        entity.contains.forEach { skin ->
             skin.dropsFrom.add(savedEntity)
             skinRepo.save(skin)
         }
@@ -54,7 +54,7 @@ class CsgoCaseService(
         val case =
                 caseRepo.findById(id).orElseThrow { EntityNotFoundException("No case with id $id") }
 
-        for (skin in case.contains) {
+        case.contains.forEach { skin ->
             skin.dropsFrom.remove(case)
             skinRepo.save(skin)
         }

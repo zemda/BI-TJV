@@ -69,7 +69,7 @@ class SkinService(
         entity.paintSeed = min(entity.paintSeed, 1000)
 
         val savedEntity = skinRepository.save(entity)
-        for (case in entity.dropsFrom) {
+        entity.dropsFrom.forEach { case ->
             case.contains.add(savedEntity)
             caseRepo.save(case)
         }
@@ -83,7 +83,7 @@ class SkinService(
                     EntityNotFoundException("No skin with id $skinId")
                 }
 
-        for (caseId in caseIds) {
+        caseIds.forEach { caseId ->
             val csgoCase =
                     caseRepo.findById(caseId).orElseThrow {
                         EntityNotFoundException("No csgo case with id $caseId")
@@ -108,7 +108,7 @@ class SkinService(
             )
         }
 
-        for (csgoCase in skin.dropsFrom) {
+        skin.dropsFrom.forEach { csgoCase ->
             csgoCase.contains.remove(skin)
             caseRepo.save(csgoCase)
         }
