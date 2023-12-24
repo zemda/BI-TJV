@@ -6,7 +6,6 @@ import cz.cvut.fit.tjv.cs_skin_system.dto.WeaponDTO
 import cz.cvut.fit.tjv.cs_skin_system.persistent.JPASkinRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -15,18 +14,15 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WeaponControllerTest(@LocalServerPort val port: Int) {
 
     @Autowired lateinit var restTemplate: TestRestTemplate
-
     @Autowired lateinit var skinRepository: JPASkinRepository
 
     @Test
-    fun `createWeapon, updateWeaponTag and deleteWeapon test`() {
+    fun shouldCreateWeaponAndUpdateWeaponTagAndDeleteWeapon() {
 
         val savedSkin =
                 skinRepository.save(
@@ -52,7 +48,7 @@ class WeaponControllerTest(@LocalServerPort val port: Int) {
 
         val createResponse =
                 restTemplate.postForEntity(
-                        "http://localhost:$port/weapons?skinId=${savedSkin.id}",
+                    "http://localhost:$port/weapons",
                         weaponCreateDTO,
                         WeaponDTO::class.java
                 )

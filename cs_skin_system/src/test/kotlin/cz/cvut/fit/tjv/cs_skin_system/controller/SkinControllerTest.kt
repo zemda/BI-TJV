@@ -28,6 +28,7 @@ class SkinControllerTest {
         val skinDto = SkinDTO(1L, "Test Skin", "Rare", "Factory New", 0.1, 10, 0.002, null)
 
         `when`(skinService.create(skin)).thenReturn(skinDto)
+
         mockMvc.perform(
                         post("/skins")
                                 .contentType(MediaType.APPLICATION_JSON)
