@@ -36,6 +36,11 @@ const SkinController = () => {
     const currentFilterSkins = filterSkins.slice(indexOfFirstFilterSkin, indexOfLastFilterSkin);
     const paginateFilter = (pageNumber) => setCurrentFilterPage(pageNumber);
 
+    const [skinIdGetDropsFrom, setSkinIdGetDropsFrom] = useState('');
+    const [casesForSkin, setCasesForSkin] = useState([]);
+    const [casesCurrentPage, setCasesCurrentPage] = useState(1);
+    const casesPerPage = 5;
+
 
     useEffect(() => {
         getSkins();
@@ -219,6 +224,10 @@ const SkinController = () => {
     };
 
     const handleDeleteSkin = () => {
+        if (!skinIdDelete) { 
+            handleError('You need to insert skin id');
+            return;
+        }
         deleteSkin(skinIdDelete);
     };
 
@@ -300,6 +309,30 @@ const SkinController = () => {
         const sortMethod = event.target.value;
         const sortedSkins = sortSkins(skins, sortMethod);
         setSkins(sortedSkins);
+    };
+
+    const getCasesForSkin = (id) => {
+        axios.get(`http://localhost:8080/skins/${id}/cases`)
+            .then(response => {
+                setCasesForSkin(response.data);
+                setSkinIdGetDropsFrom('');
+            })
+            .catch(error => {
+                console.error('Error getting cases for skin: ', error);
+                handleError(error.response.data);
+            });
+    };
+    
+    const handleGetCasesForSkin = () => {
+        if (!skinIdGetDropsFrom) { 
+            handleError('You need to insert skin id');
+            return;
+        }
+        getCasesForSkin(skinIdGetDropsFrom);
+    }
+
+    const clearCasesForSkin = () => {
+        setCasesForSkin([]);
     };
 
     return (
@@ -488,6 +521,44 @@ const SkinController = () => {
                     <input className="input-field" name="updateDropsFromIdCase" placeholder="Case IDs (comma separated)" onChange={(e) => setCaseIdDropsFrom(e.target.value)} value={caseIdDropsFrom} />
                     <button onClick={handleUpdateSkinDropsFrom}>Update</button>
                 </div>
+            </div>
+
+            <h2>Get cases that contains skin</h2>
+            <div className="form">
+                <div className="form-group">
+                    <input className="input-field " type="number" min="0" placeholder="Enter skin ID" onChange={(e) => setSkinIdGetDropsFrom(Math.ceil(e.target.value))} value={skinIdGetDropsFrom} />
+                    <button style={{ marginLeft: '10px', marginBottom: '10px' }} onClick={handleGetCasesForSkin}>Get Cases</button>
+                    <button style={{ marginLeft: '10px', marginBottom: '10px' }} onClick={clearCasesForSkin}>Clear Results</button>
+                </div>
+                {casesForSkin.length > 0 && (
+                    <>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {casesForSkin.slice((casesCurrentPage - 1) * casesPerPage, casesCurrentPage * casesPerPage).map(csgoCase => (
+                                    <tr key={csgoCase.id}>
+                                        <td>{csgoCase.id}</td>
+                                        <td>{csgoCase.name}</td>
+                                        <td>{csgoCase.price}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <div>
+                            {[...Array(Math.ceil(casesForSkin.length / casesPerPage)).keys()].map(number => (
+                                <button key={number} onClick={() => setCasesCurrentPage(number + 1)}>
+                                    {number + 1}
+                                </button>
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
 
 
