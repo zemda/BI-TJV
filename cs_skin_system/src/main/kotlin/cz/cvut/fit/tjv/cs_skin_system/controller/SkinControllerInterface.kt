@@ -1,6 +1,7 @@
 package cz.cvut.fit.tjv.cs_skin_system.controller
 
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
+import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import io.swagger.v3.oas.annotations.Operation
@@ -126,6 +127,22 @@ interface SkinControllerInterface {
     )
     @GetMapping("/noWeapon")
     fun getSkinsWithNoWeapon(): ResponseEntity<List<SkinDTO>>
+
+    @Operation(
+        summary = "Fetch a list of cases in which a specific skin may drop, based on the provided skin Id.",
+        responses =
+            [
+                ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully fetched the list of cases.",
+                    content = [Content(schema = Schema(implementation = CsgoCaseDTO::class))]
+                ),
+                ApiResponse(responseCode = "404", description = "Skin with the provided Id not found."),
+                ApiResponse(responseCode = "500", description = "Server error")
+            ]
+    )
+    @GetMapping("/{skinId}/cases")
+    fun getCasesForSkin(@PathVariable skinId: Long): ResponseEntity<List<CsgoCaseDTO>>
 
     @Operation(
         summary = "Fetch skins that meet the parameters",

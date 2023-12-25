@@ -1,6 +1,7 @@
 package cz.cvut.fit.tjv.cs_skin_system.controller
 
 import cz.cvut.fit.tjv.cs_skin_system.application.SkinService
+import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import org.springframework.http.HttpStatus
@@ -51,6 +52,11 @@ class SkinController(val skinService: SkinService) : SkinControllerInterface {
     override fun getSkinsWithNoWeapon(): ResponseEntity<List<SkinDTO>> {
         val skins = skinService.getSkinsWithNoWeapon()
         return ResponseEntity.ok(skins)
+    }
+
+    override fun getCasesForSkin(@PathVariable skinId: Long): ResponseEntity<List<CsgoCaseDTO>> {
+        val cases = skinService.getCasesForSkin(skinId)
+        return ResponseEntity.ok(cases)
     }
 
     override fun filterSkins(

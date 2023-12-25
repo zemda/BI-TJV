@@ -1,5 +1,6 @@
 package cz.cvut.fit.tjv.cs_skin_system.application
 
+import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 
 interface SkinServiceInterface {
@@ -19,4 +20,5 @@ interface SkinServiceInterface {
             csgoCaseName: String?
     ): List<SkinDTO>
     fun getSkinsWithNoWeapon(): List<SkinDTO>
+    fun getCasesForSkin(skinId: Long): List<CsgoCaseDTO>
 }

@@ -3,6 +3,7 @@ package cz.cvut.fit.tjv.cs_skin_system.application
 import cz.cvut.fit.tjv.cs_skin_system.domain.CsgoCase
 import cz.cvut.fit.tjv.cs_skin_system.domain.Skin
 import cz.cvut.fit.tjv.cs_skin_system.domain.Weapon
+import cz.cvut.fit.tjv.cs_skin_system.dto.CsgoCaseDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinCreateDTO
 import cz.cvut.fit.tjv.cs_skin_system.dto.SkinDTO
 import cz.cvut.fit.tjv.cs_skin_system.exception.EntityHasDependencyException
@@ -75,6 +76,14 @@ class SkinService(
         }
 
         return toDTO(savedEntity)
+    }
+
+    override fun getCasesForSkin(skinId: Long): List<CsgoCaseDTO> {
+        val skin =
+                skinRepository.findById(skinId).orElseThrow {
+                    EntityNotFoundException("No skin with id $skinId")
+                }
+        return skin.dropsFrom.map { case -> CsgoCaseDTO(case.id, case.name, case.price) }
     }
 
     override fun updateSkinDropsFrom(skinId: Long, caseIds: List<Long>): SkinDTO {
