@@ -15,20 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 @Transactional
 class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRepository) :
-        WeaponServiceInterface, CrudServiceInterface<Weapon, Long, WeaponDTO, WeaponCreateDTO> {
-
-    override fun getById(id: Long): WeaponDTO {
-        val entity =
-                weaponRepo.findById(id).orElseThrow {
-                    EntityNotFoundException("Weapon with id $id not found.")
-                }
-        return toDTO(entity)
-    }
-
-    override fun getAll(): List<WeaponDTO> {
-        val entities = weaponRepo.findAll()
-        return entities.map { toDTO(it) }
-    }
+        WeaponServiceInterface, CrudService<Weapon, Long, WeaponDTO, WeaponCreateDTO>(weaponRepo) {
 
     override fun create(dto: WeaponCreateDTO): WeaponDTO {
         val skin =

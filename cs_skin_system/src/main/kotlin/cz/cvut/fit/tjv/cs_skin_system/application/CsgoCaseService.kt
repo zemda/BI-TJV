@@ -19,18 +19,7 @@ import org.springframework.stereotype.Service
 class CsgoCaseService(
         @Autowired var caseRepo: JPACsgoCaseRepository,
         @Autowired var skinRepo: JPASkinRepository
-) : CsgoCaseServiceInterface, CrudServiceInterface<CsgoCase, Long, CsgoCaseDTO, CsgoCaseCreateDTO> {
-
-    override fun getById(id: Long): CsgoCaseDTO {
-        val entity =
-                caseRepo.findById(id).orElseThrow { EntityNotFoundException("No case with id $id") }
-        return toDTO(entity)
-    }
-
-    override fun getAll(): List<CsgoCaseDTO> {
-        val entities = caseRepo.findAll()
-        return entities.map { toDTO(it) }
-    }
+) : CsgoCaseServiceInterface, CrudService<CsgoCase, Long, CsgoCaseDTO, CsgoCaseCreateDTO>(caseRepo) {
 
     override fun create(dto: CsgoCaseCreateDTO): CsgoCaseDTO {
         if (dto.contains.isNullOrEmpty()) {

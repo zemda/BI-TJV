@@ -25,20 +25,7 @@ class SkinService(
         @Autowired var skinRepository: JPASkinRepository,
         @Autowired var caseRepo: JPACsgoCaseRepository,
         @Autowired var weaponService: WeaponService
-) : SkinServiceInterface, CrudServiceInterface<Skin, Long, SkinDTO, SkinCreateDTO> {
-
-    override fun getById(id: Long): SkinDTO {
-        val entity =
-                skinRepository.findById(id).orElseThrow {
-                    EntityNotFoundException("No skin with id $id")
-                }
-        return toDTO(entity)
-    }
-
-    override fun getAll(): List<SkinDTO> {
-        val entities = skinRepository.findAll()
-        return entities.map { toDTO(it) }
-    }
+) : SkinServiceInterface, CrudService<Skin, Long, SkinDTO, SkinCreateDTO>(skinRepository) {
 
     override fun updateSkinPrice(skinId: Long, newPrice: Double): SkinDTO {
         val skin =
