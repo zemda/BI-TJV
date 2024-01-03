@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import kotlin.math.min
 
 @Entity
 @Table(name = "skin")
@@ -26,6 +27,19 @@ class Skin {
     @Column(name = "paint_seed") @NotNull @Min(0) var paintSeed: Int = 0
 
     @Column(name = "float") @NotNull @DecimalMin("0.0") var float: Double = 0.0
+        set(value) {
+            field = value
+            exterior = when {
+                field <= 0.07 -> "Factory New"
+                field <= 0.15 -> "Minimal Wear"
+                field <= 0.37 -> "Field-Tested"
+                field <= 0.44 -> "Well-Worn"
+                else -> {
+                    field = min(field, 1.0)
+                    "Battle-Scarred"
+                }
+            }
+        }
 
     @OneToOne(mappedBy = "skin", cascade = [CascadeType.PERSIST])
     @JsonBackReference

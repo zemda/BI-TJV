@@ -43,17 +43,6 @@ class SkinService(
 
     override fun create(dto: SkinCreateDTO): SkinDTO {
         val entity = toEntity(dto)
-        entity.exterior =
-                when {
-                    entity.float <= 0.07 -> "Factory New"
-                    entity.float <= 0.15 -> "Minimal Wear"
-                    entity.float <= 0.37 -> "Field-Tested"
-                    entity.float <= 0.44 -> "Well-Worn"
-                    else -> {
-                        entity.float = min(entity.float, 1.0)
-                        "Battle-Scarred"
-                    }
-                }
         entity.paintSeed = min(entity.paintSeed, 1000)
 
         val savedEntity = skinRepository.save(entity)
