@@ -85,13 +85,25 @@ const WeaponController = () => {
 
     const createWeapon = () => {
         const weaponWithSkin = { ...newWeapon, skin: selectedSkin.value };
-        axios.post('http://localhost:8080/weapons', weaponWithSkin)
+        axios.get(`http://localhost:8080/skins/exists?skinId=${selectedSkin.value}&weaponName=${newWeapon.name}`)
             .then(response => {
-                console.log(response.data);
-                getWeapons();
-                getSkinsWithNoWeapon();
-                setSelectedSkin(null)
-                setNewWeapon({});
+                console.error('Response: ', response.data);
+                if (!response.data) {
+                    axios.post('http://localhost:8080/weapons', weaponWithSkin)
+                        .then(response => {
+                            console.log(response.data);
+                            getWeapons();
+                            getSkinsWithNoWeapon();
+                            setSelectedSkin(null)
+                            setNewWeapon({});
+                        })
+                        .catch(error => {
+                            console.error('Error creating weapon: ', error);
+                            handleError(error.response.data);
+                        });
+                } else {
+                    handleError('Skin already exists on this weapon');
+                }
             })
             .catch(error => {
                 console.error('Error creating weapon: ', error);
