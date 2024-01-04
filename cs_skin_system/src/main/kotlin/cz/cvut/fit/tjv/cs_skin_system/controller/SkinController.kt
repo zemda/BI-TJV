@@ -54,6 +54,11 @@ class SkinController(val skinService: SkinService) : SkinControllerInterface {
         return ResponseEntity.ok(skins)
     }
 
+    override fun skinExists(skinId: Long, weaponName: String): ResponseEntity<Boolean> {
+        print(skinService.existsSkin(skinId, weaponName))
+        return ResponseEntity.ok(skinService.existsSkin(skinId, weaponName))
+    }
+
     override fun getCasesForSkin(@PathVariable skinId: Long): ResponseEntity<List<CsgoCaseDTO>> {
         val cases = skinService.getCasesForSkin(skinId)
         return ResponseEntity.ok(cases)

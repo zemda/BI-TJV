@@ -129,6 +129,17 @@ interface SkinControllerInterface {
     fun getSkinsWithNoWeapon(): ResponseEntity<List<SkinDTO>>
 
     @Operation(
+        summary = "Check if a skin with the provided details exists",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Successfully checked the existence of the skin, true if exists, false otherwise"),
+            ApiResponse(responseCode = "404", description = "Skin not found"),
+            ApiResponse(responseCode = "500", description = "Server error")
+        ]
+    )
+    @GetMapping("/exists")
+    fun skinExists(skinId: Long, weaponName: String): ResponseEntity<Boolean>
+
+    @Operation(
         summary = "Fetch a list of cases in which a specific skin may drop, based on the provided skin Id.",
         responses =
             [
