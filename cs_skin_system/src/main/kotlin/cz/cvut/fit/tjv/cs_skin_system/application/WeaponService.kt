@@ -30,15 +30,6 @@ class WeaponService(var weaponRepo: JPAWeaponRepository, var skinRepo: JPASkinRe
         dto.skin = skin.id
         val entity = toEntity(dto)
         entity.skin = skin
-        if (skinRepo.existsByNameAndPaintSeedAndFloatAndWeaponName(
-                        skin.name,
-                        skin.paintSeed,
-                        skin.float,
-                        entity.name
-                )
-        ) {
-            throw EntityExistsException("Skin with this weapon already exists.")
-        }
 
         val createdEntity = weaponRepo.save(entity)
         skin.weapon = createdEntity

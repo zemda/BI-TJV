@@ -182,6 +182,20 @@ class SkinService(
         return entities.map { toDTO(it) }
     }
 
+    override fun existsSkin(skinId: Long, weaponName: String): Boolean {
+        val skin =
+            skinRepository.findById(skinId).orElseThrow {
+                EntityNotFoundException("No skin with id $skinId")
+            }
+
+        return skinRepository.existsByNameAndPaintSeedAndFloatAndWeaponName(
+            skin.name,
+            skin.paintSeed,
+            skin.float,
+            weaponName
+        )
+    }
+
     override fun toDTO(entity: Skin): SkinDTO {
         return SkinDTO(
                 id = entity.id,

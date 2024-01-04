@@ -21,4 +21,5 @@ interface SkinServiceInterface {
     ): List<SkinDTO>
     fun getSkinsWithNoWeapon(): List<SkinDTO>
     fun getCasesForSkin(skinId: Long): List<CsgoCaseDTO>
+    fun existsSkin(skinId: Long, weaponName: String): Boolean
 }
